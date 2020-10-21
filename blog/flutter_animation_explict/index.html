@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+  <meta charset="utf-8">
+<title>【译】Flutter动画系列——显示动画 - TechChao</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.75.0" /><meta itemprop="name" content="【译】Flutter动画系列——显示动画">
+<meta itemprop="description" content="在Flutter 动画详解系列——隐式动画中我们介绍了Flutter中的隐式动画，隐式动画创建简单、灵活性差，而显式动画相对来说更加灵活。接下来让我们来看看 Flutter 中的显式动画。
+Flutter内置显示动画FooTransition（Foo代表动画需要改变的属性值） 先来看一张图，下面列出了部分Flutter中内置的显式动画Widget： 我们可以通过直接使用上述的Widget，来创建显示动画，让我们以RotationTransition为例来看看显式动画如何创建。
+RotationTransition Demo // RotationTransition 构造器 RotationTransition({ Widget child, Alignment alignment, Animation&lt;double&gt; turns, }) child 指定哪个widget用来做旋转动画，alignment是坐标系原点的对齐方式，我们想要有银河星系的旋转效果使用center作为坐标系原点。turns：在API文档中定义是Animation抽象类型，turns是显示动画有别于隐式动画的的重要参数。我们使用隐式动画Widget AnimatedContainer 更改transform也能达到图片旋转的效果，但是隐式动画只会执行一次便会停止。借助于显式动画，我们不仅可以控制动画时间长，并可以让动画一直重复执行。
+创建AnimationController AnimationController 顾名思义，是用来控制动画，AnimationController 继承自抽象类Animation&lt;double&gt;,AnimationController 可以监听动画的执行、还能提供一些动画的控制操作。
+class _TimeMachineState extends State&lt;TimeMachine&gt; { AnimationController _animationController; @override void initState() { super.initState(); _animationController = AnimationController( // ... ); } @override void dispose() { _animationController.dispose(); super.dispose(); } } AnimationController 需要传递两个必要参数，duration 即我们动画的执行时间，默认 AnimationController 在给定的时间段内会线性的生成从0.0到1.0的数字。而具体值的数量和粒度取决于之前的duration参数。设置 vsync 时用来防止屏幕外动画（动画的UI不在当前屏幕时）消耗不必要的资源。 通过将SingleTickerProviderStateMixin添加到类定义中，可以将stateful对象作为vsync的值。
+class _TimeMachineState extends State&lt;TimeMachine&gt; with SingleTickerProviderStateMixin { AnimationController _animationController; @override void initState() { super.">
+<meta itemprop="datePublished" content="2020-10-21T10:50:11+08:00" />
+<meta itemprop="dateModified" content="2020-10-21T10:50:11+08:00" />
+<meta itemprop="wordCount" content="605">
+<meta itemprop="image" content="">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta property="og:title" content="【译】Flutter动画系列——显示动画" />
+<meta property="og:description" content="在Flutter 动画详解系列——隐式动画中我们介绍了Flutter中的隐式动画，隐式动画创建简单、灵活性差，而显式动画相对来说更加灵活。接下来让我们来看看 Flutter 中的显式动画。
+Flutter内置显示动画FooTransition（Foo代表动画需要改变的属性值） 先来看一张图，下面列出了部分Flutter中内置的显式动画Widget： 我们可以通过直接使用上述的Widget，来创建显示动画，让我们以RotationTransition为例来看看显式动画如何创建。
+RotationTransition Demo // RotationTransition 构造器 RotationTransition({ Widget child, Alignment alignment, Animation&lt;double&gt; turns, }) child 指定哪个widget用来做旋转动画，alignment是坐标系原点的对齐方式，我们想要有银河星系的旋转效果使用center作为坐标系原点。turns：在API文档中定义是Animation抽象类型，turns是显示动画有别于隐式动画的的重要参数。我们使用隐式动画Widget AnimatedContainer 更改transform也能达到图片旋转的效果，但是隐式动画只会执行一次便会停止。借助于显式动画，我们不仅可以控制动画时间长，并可以让动画一直重复执行。
+创建AnimationController AnimationController 顾名思义，是用来控制动画，AnimationController 继承自抽象类Animation&lt;double&gt;,AnimationController 可以监听动画的执行、还能提供一些动画的控制操作。
+class _TimeMachineState extends State&lt;TimeMachine&gt; { AnimationController _animationController; @override void initState() { super.initState(); _animationController = AnimationController( // ... ); } @override void dispose() { _animationController.dispose(); super.dispose(); } } AnimationController 需要传递两个必要参数，duration 即我们动画的执行时间，默认 AnimationController 在给定的时间段内会线性的生成从0.0到1.0的数字。而具体值的数量和粒度取决于之前的duration参数。设置 vsync 时用来防止屏幕外动画（动画的UI不在当前屏幕时）消耗不必要的资源。 通过将SingleTickerProviderStateMixin添加到类定义中，可以将stateful对象作为vsync的值。
+class _TimeMachineState extends State&lt;TimeMachine&gt; with SingleTickerProviderStateMixin { AnimationController _animationController; @override void initState() { super." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://techchao.com/blog/flutter_animation_explict/" />
+<meta property="og:image" content="" />
+<meta property="article:published_time" content="2020-10-21T10:50:11+08:00" />
+<meta property="article:modified_time" content="2020-10-21T10:50:11+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content=""/>
+
+<meta name="twitter:title" content="【译】Flutter动画系列——显示动画"/>
+<meta name="twitter:description" content="在Flutter 动画详解系列——隐式动画中我们介绍了Flutter中的隐式动画，隐式动画创建简单、灵活性差，而显式动画相对来说更加灵活。接下来让我们来看看 Flutter 中的显式动画。
+Flutter内置显示动画FooTransition（Foo代表动画需要改变的属性值） 先来看一张图，下面列出了部分Flutter中内置的显式动画Widget： 我们可以通过直接使用上述的Widget，来创建显示动画，让我们以RotationTransition为例来看看显式动画如何创建。
+RotationTransition Demo // RotationTransition 构造器 RotationTransition({ Widget child, Alignment alignment, Animation&lt;double&gt; turns, }) child 指定哪个widget用来做旋转动画，alignment是坐标系原点的对齐方式，我们想要有银河星系的旋转效果使用center作为坐标系原点。turns：在API文档中定义是Animation抽象类型，turns是显示动画有别于隐式动画的的重要参数。我们使用隐式动画Widget AnimatedContainer 更改transform也能达到图片旋转的效果，但是隐式动画只会执行一次便会停止。借助于显式动画，我们不仅可以控制动画时间长，并可以让动画一直重复执行。
+创建AnimationController AnimationController 顾名思义，是用来控制动画，AnimationController 继承自抽象类Animation&lt;double&gt;,AnimationController 可以监听动画的执行、还能提供一些动画的控制操作。
+class _TimeMachineState extends State&lt;TimeMachine&gt; { AnimationController _animationController; @override void initState() { super.initState(); _animationController = AnimationController( // ... ); } @override void dispose() { _animationController.dispose(); super.dispose(); } } AnimationController 需要传递两个必要参数，duration 即我们动画的执行时间，默认 AnimationController 在给定的时间段内会线性的生成从0.0到1.0的数字。而具体值的数量和粒度取决于之前的duration参数。设置 vsync 时用来防止屏幕外动画（动画的UI不在当前屏幕时）消耗不必要的资源。 通过将SingleTickerProviderStateMixin添加到类定义中，可以将stateful对象作为vsync的值。
+class _TimeMachineState extends State&lt;TimeMachine&gt; with SingleTickerProviderStateMixin { AnimationController _animationController; @override void initState() { super."/>
+<link rel="stylesheet" href="http://techchao.com/css/bundle.min.ef567f57b0a317f77af9c245e86ebb69ffe1efd720341032112204c93f4af256.css" integrity="sha256-71Z/V7CjF/d6&#43;cJF6G67af/h79cgNBAyESIEyT9K8lY="><link rel="stylesheet" href="http://techchao.com/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="http://techchao.com/" class="nav">
+        
+          博客
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          <a href="http://techchao.com/" class="nav link"><i class='fas fa-home'></i> 首页</a>
+        
+      
+        
+          
+          <a href="http://techchao.com/categories/" class="nav link"><i class='fas fa-sitemap'></i> 分类</a>
+        
+      
+        
+          
+          <a href="http://techchao.com/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+        
+      
+        
+          
+          <a href="http://techchao.com/about/" class="nav link"><i class='far fa-id-card'></i> 关于</a>
+        
+      
+      
+      
+    </menu>
+    
+    
+    
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  
+  
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" >
+  <a href="http://techchao.com/"><img src="http://techchao.com/img/main/logo.jpg" class="circle" width="100" alt="TechChao" /></a>
+  <header>
+    <h1>TechChao</h1>
+  </header>
+  <main>
+    <p>一个平凡程序员写写东西的地方</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="http://techchao.com/blog/flutter_animation_explict/">【译】Flutter动画系列——显示动画</a></h2>
+    
+    
+  </div>
+  <div class="meta">
+    <time datetime="2020-10-21 10:50:11 &#43;0800 CST">October 21, 2020</time>
+    
+    <p>3 分钟</p>
+  </div>
+</header>
+
+    <div class="content">
+      <a href="http://techchao.com/blog/flutter_animation_explict/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+      <p>在<a href="https://www.jianshu.com/p/df0d688cd7ac">Flutter 动画详解系列——隐式动画</a>中我们介绍了Flutter中的隐式动画，隐式动画创建简单、灵活性差，而显式动画相对来说更加灵活。接下来让我们来看看 Flutter 中的显式动画。</p>
+<h2 id="flutter内置显示动画footransitionfoo代表动画需要改变的属性值">Flutter内置显示动画FooTransition（Foo代表动画需要改变的属性值）</h2>
+<p>先来看一张图，下面列出了部分Flutter中内置的显式动画Widget：
+<img src="https://upload-images.jianshu.io/upload_images/1178839-7244e5ac99a37d5f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="flutter_transition.png"></p>
+<p>我们可以通过直接使用上述的Widget，来创建显示动画，让我们以<code>RotationTransition</code>为例来看看显式动画如何创建。</p>
+<h3 id="rotationtransition-demo">RotationTransition Demo</h3>
+<pre><code>// RotationTransition 构造器
+RotationTransition({
+  Widget child,
+  Alignment alignment,
+  Animation&lt;double&gt; turns,
+})
+</code></pre><p>child 指定哪个widget用来做旋转动画，alignment是坐标系原点的对齐方式，我们想要有银河星系的旋转效果使用center作为坐标系原点。turns：在API文档中定义是<code>Animation</code>抽象类型，turns是显示动画有别于隐式动画的的重要参数。我们使用隐式动画Widget <code>AnimatedContainer</code> 更改<code>transform</code>也能达到图片旋转的效果，但是隐式动画只会执行一次便会停止。借助于显式动画，我们不仅可以控制动画时间长，并可以让动画一直重复执行。</p>
+<h3 id="创建animationcontroller">创建AnimationController</h3>
+<p>AnimationController 顾名思义，是用来控制动画，AnimationController 继承自抽象类<code>Animation&lt;double&gt;</code>,AnimationController 可以监听动画的执行、还能提供一些动画的控制操作。</p>
+<pre><code>class _TimeMachineState extends State&lt;TimeMachine&gt; {
+  AnimationController _animationController;
+ 
+  @override
+  void initState() {
+    super.initState();
+    
+    _animationController = AnimationController(
+      // ...
+    );
+  }
+  
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+}
+</code></pre><p>AnimationController 需要传递两个必要参数，<code>duration</code> 即我们动画的执行时间，默认 AnimationController 在给定的时间段内会线性的生成从0.0到1.0的数字。而具体值的数量和粒度取决于之前的duration参数。设置 <code>vsync</code> 时用来防止屏幕外动画（动画的UI不在当前屏幕时）消耗不必要的资源。 通过将SingleTickerProviderStateMixin添加到类定义中，可以将stateful对象作为vsync的值。</p>
+<pre><code>class _TimeMachineState extends State&lt;TimeMachine&gt; 
+with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+ 
+  @override
+  void initState() {
+    super.initState();
+    
+    _animationController = AnimationController(
+      duration: Duration(seconds: 15),
+      vsync: this,
+    );
+  }
+  
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+}
+</code></pre><p>当我们创建完AnimationController后，不要忘记开启动画:</p>
+<pre><code>_animationController = AnimationController(
+  duration: Duration(seconds: 15),
+  vsync: this,
+)..repeat();
+</code></pre><p>最后，我们回到上面 RotationTransition 银河旋转动画效果的代码部分，补充完turns参数。</p>
+<pre><code>RotationTransition(
+  child: GalaxyFitz(),
+  alignment: Alignment.center,
+  turns: _animationController,
+)
+</code></pre><p>同时，我们也可以通过_animationController来对动画进行控制,如下我们添加了一个100的正方形手势，来暂停、开启动画效果。</p>
+<pre><code>class TimeStopper extends StatelessWidget {
+  final AnimationController controller;
+ 
+  const TimeStopper({Key key, this.controller}) : super(key: key);
+ 
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (controller.isAnimating) {
+          controller.stop();
+        } else {
+          controller.repeat();
+        }
+      },
+      child: Container(color: Colors.red,width: 100,height: 100,),
+    );
+  }
+}
+</code></pre><h2 id="小结">小结</h2>
+<p>相对于隐式动画，显式动画需要一个动画的控制器，我们知道了在Flutter中存在内置的显示动画效果<code>FooTransition</code>。我们可以通过设置 duration 、和 AnimationController 来创建一个重复循环的动画效果，并且我们可以通过 AnimationController 来控制动画。那么当系统自带的显式动画Widget无法满足我们时，我们就需要创建自定义的显式动画啦。</p>
+<h2 id="使用animatedbuilder和animatedwidget创建自定义显式动画">使用AnimatedBuilder和AnimatedWidget创建自定义显式动画</h2>
+<p>为了更加具体的了解AnimatedBuilder和AnimatedWidget，我们编写一个外星飞船的动画demo，动画效果是飞船的传输光线。</p>
+<p>首先自定义一个Path剪切器，形成光束的形态。</p>
+<pre><code>import 'package:flutter/material.dart';
+
+void main() =&gt; runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: Scaffold(
+      body: MyHomePage(),
+    ));
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: &lt;Widget&gt;[
+        ClipPath(
+          clipper: const BeamClipper(),
+          child: Container(
+            height: 1000,
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                radius: 1.5,
+                colors: [
+                  Colors.yellow,
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class BeamClipper extends CustomClipper&lt;Path&gt; {
+  const BeamClipper();
+
+  @override
+  getClip(Size size) {
+    return Path()
+      ..lineTo(size.width / 2, size.height / 2)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..lineTo(size.width / 2, size.height / 2)
+      ..close();
+  }
+
+  /// Return false always because we always clip the same area.
+  @override
+  bool shouldReclip(CustomClipper oldClipper) =&gt; false;
+}
+</code></pre><p><img src="https://upload-images.jianshu.io/upload_images/1178839-7b6ae6d3e8d96a43.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="截屏2020-10-14 下午2.08.37.png"></p>
+<p>接下来就可通过AnimatedBuilder和 AnimatedWidget 来实现动画效果了。</p>
+<h3 id="animatedbuilder">AnimatedBuilder</h3>
+<pre><code>class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() =&gt; _MyHomePageState();
+}
+
+class _MyHomePageState extends State&lt;MyHomePage&gt;
+    with SingleTickerProviderStateMixin {
+  final Image starsBackground = Image.asset(
+    'assets/milky-way.jpg',
+  );
+  final Image ufo = Image.asset('assets/ufo.png');
+  AnimationController _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animation = AnimationController(
+      duration: const Duration(seconds: 5),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: &lt;Widget&gt;[
+        starsBackground,
+        AnimatedBuilder(
+          animation: _animation,
+          builder: (_, __) {
+            return ClipPath(
+              clipper: const BeamClipper(),
+              child: Container(
+                height: 1000,
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    radius: 1.5,
+                    colors: [
+                      Colors.yellow,
+                      Colors.transparent,
+                    ],
+                    stops: [0, _animation.value],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        ufo,
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _animation.dispose();
+    super.dispose();
+  }
+}
+
+class BeamClipper extends CustomClipper&lt;Path&gt; {
+  const BeamClipper();
+
+  @override
+  getClip(Size size) {
+    return Path()
+      ..lineTo(size.width / 2, size.height / 2)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..lineTo(size.width / 2, size.height / 2)
+      ..close();
+  }
+
+  /// Return false always because we always clip the same area.
+  @override
+  bool shouldReclip(CustomClipper oldClipper) =&gt; false;
+}
+</code></pre><p>跟之前Flutter 系统内置的显式动画一样，我们需要创建一个动画控制器、混入 SingleTickerProviderStateMixin 防止屏幕外动画。</p>
+<p>之前在介绍 TweenAnimationBuilder 文章中提到过，在设置 child 参数的时候，如果在动画过程中 child 不会变动，我们可以提前构建它，然后将其传递给AnimatedBuilder。在这个例子中，BeamClipper 可以提供一个常量的构造函数生成常量对象，用于优化动画的性能。</p>
+<h3 id="animatedwidget">AnimatedWidget</h3>
+<p>使用 AnimatedBuilder 代码构建出来的动画效果，可能代码有点臃肿，难以阅读。此时我们可以尝试创建一个 AnimatedWidget 的子类，来完成同样的动画效果。与系统的内置显式动画效果命名一致，推荐FooTransition的命名原则。这里我们将其命名为<code>BeamTransition</code>，</p>
+<pre><code>class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() =&gt; _MyHomePageState();
+}
+
+class _MyHomePageState extends State&lt;MyHomePage&gt;
+    with SingleTickerProviderStateMixin {
+  final Image starsBackground = Image.asset(
+    'assets/milky-way.jpg',
+  );
+  final Image ufo = Image.asset('assets/ufo.png');
+  AnimationController _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animation = AnimationController(
+      duration: const Duration(seconds: 5),
+      vsync: this,
+    )..repeat();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      children: &lt;Widget&gt;[
+        starsBackground,
+        BeamTransition(animation: _animation),
+        ufo,
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _animation.dispose();
+    super.dispose();
+  }
+}
+
+class BeamTransition extends AnimatedWidget {
+  BeamTransition({Key key, Animation&lt;double&gt; animation})
+      : super(key: key, listenable: animation);
+  @override
+  Widget build(BuildContext context) {
+    final Animation&lt;double&gt; animation = listenable;
+    return ClipPath(
+      clipper: const BeamClipper(),
+      child: Container(
+        height: 1000,
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            radius: 1.5,
+            colors: [
+              Colors.yellow,
+              Colors.transparent,
+            ],
+            stops: [0, animation.value],
+          ),
+        ),
+      ),
+    );
+  }
+}
+</code></pre><p>我们将上面AnimatedBuilder中build的方法替换了下。将创建动画的代码抽取到了BeamTransition中。注意在BeamTransition中 child 中不变部分的我们使用常量值。</p>
+<h2 id="总结">总结</h2>
+<p>到此，Flutter 中显式动画的介绍也告一段落了，显式动画能够循环的执行下去、并且通过动画控制器我们可以轻松的控制动画。在自定义显式动画时，比较推荐使用 <code>AnimatedWidget</code> 单独的抽取成一个独立的Widget。当然如果动画足够简单，使用 AnimatedBuilder 不会造成代码阅读的困难的话，也可以是用AnimatedBuilder。</p>
+
+    </div>
+    <footer>
+      <div class="stats">
+  
+    <ul class="categories">
+      
+        
+          <li><a class="article-terms-link" href="http://techchao.com/categories/flutter/">Flutter</a></li>
+        
+      
+    </ul>
+  
+  
+    <ul class="tags">
+      <li>None</li>
+    </ul>
+  
+</div>
+
+    </footer>
+  </article>
+  
+    
+  <article class="post">
+    
+    <div>
+      <h2 id="say-something">说些什么</h2>
+        <form id="comment-form" class="new-comment" method="POST">
+          
+          <h3 class='reply-notice hidden'>
+            <span class='reply-name'></span>
+          </h3>
+
+          
+          <input type="hidden" name="options[entryId]" value="10db03d4dd86eba31222a6d45c0d1ffb">
+          <input type='hidden' name='fields[replyThread]' value=''>
+          <input type='hidden' name='fields[replyID]' value=''>
+          <input type='hidden' name='fields[replyName]' value=''>
+
+          
+          <input required name='fields[name]' type='text' placeholder='你的名字'>
+          <input name='fields[website]' type='text' placeholder='您的网页'>
+          <input required name='fields[email]' type='email' placeholder='你的邮件'>
+          <textarea required name='fields[body]' placeholder='你的信息' rows='10'></textarea>
+
+          
+          
+
+          
+          <div class='submit-notice'>
+            <strong class='submit-notice-text submit-success hidden'>感谢您的评论！被批准后它会立即在此站点展示。</strong>
+            <strong class='submit-notice-text submit-failed hidden'>很抱歉，您的提交存在错误。请确保所有必填字段都已填写正确，然后再试一次。</strong>
+          </div>
+
+          
+          <input type='submit' value='送出' class='button'>
+          <input type='submit' value='已送出' class='hidden button' disabled>
+          <input type='reset' value='重设' class='button'>
+        </form>
+    </div>
+
+    
+    <div>
+      <h2>评论</h2>
+    </div>
+  </article>
+
+
+  
+  <div class="pagination">
+    
+    
+      <a href="http://techchao.com/blog/flutter_animation_implict/" class="button right"><span>【译】Flutter动画系列——隐式动画</span></a>
+    
+  </div>
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>最新文章</h1>
+      </header>
+      
+      <article class="mini-post">
+          <a href="http://techchao.com/blog/flutter_animation_explict/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+        <header>
+          <h2><a href="http://techchao.com/blog/flutter_animation_explict/">【译】Flutter动画系列——显示动画</a></h2>
+          <time class="published" datetime="2020-10-21 10:50:11 &#43;0800 CST">October 21, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="http://techchao.com/blog/flutter_animation_implict/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1599884441892-07f8de71a0f8?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1267&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1599884441892-07f8de71a0f8?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1267&amp;q=80" alt="Unsplash Sun Raise">
+  </a>
+        <header>
+          <h2><a href="http://techchao.com/blog/flutter_animation_implict/">【译】Flutter动画系列——隐式动画</a></h2>
+          <time class="published" datetime="2020-10-21 10:41:29 &#43;0800 CST">October 21, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="http://techchao.com/blog/flutter_animation_start/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602707081449-0ecb14d8f902?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1350&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1602707081449-0ecb14d8f902?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1350&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+        <header>
+          <h2><a href="http://techchao.com/blog/flutter_animation_start/">【译】Flutter 动画系列——初篇</a></h2>
+          <time class="published" datetime="2020-10-20 17:13:13 &#43;0800 CST">October 20, 2020</time>
+        </header>
+      </article>
+      
+      
+    </section>
+  
+
+  
+    
+
+      <section id="categories">
+        <header>
+          <h1><a href="http://techchao.com/categories">分类</a></h1>
+        </header>
+        <ul>
+          
+          
+          <li>
+              <a href="http://techchao.com/categories/flutter/">flutter<span class="count">3</span></a>
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>关于</h1>
+      </header>
+      <p>一个会点 Flutter 的 iOSer</p>
+      <footer>
+        <a href="http://techchao.com/about" class="button">查看更多</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+  
+  <p class="copyright">
+    © 2020 TechChao
+      <br>
+    主题: <a href='https://themes.gohugo.io/hugo-future-imperfect-slim/' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br> | 由 <a href='https://gohugo.io/' target='_blank' rel='noopener' title='0.75.0'>Hugo</a> 驱动
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="http://techchao.com/js/highlight.js"></script>
+    
+    <script>hljs.initHighlightingOnLoad();</script><script src="http://techchao.com/js/bundle.min.b4776136bf9d934e52e6ed871e063596bd248370eb3345ec4d49a884121c2161.js" integrity="sha256-tHdhNr&#43;dk05S5u2HHgY1lr0kg3DrM0XsTUmohBIcIWE="></script>
+    <script src="http://techchao.com/js/add-on.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', '180959623', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    </div>
+  </body>
+</html>

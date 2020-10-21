@@ -2,17 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Flutter on TechChao</title>
-    <link>https://phoenixioser.github.io/categories/flutter/</link>
+    <link>http://techchao.com/categories/flutter/</link>
     <description>Recent content in Flutter on TechChao</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Wed, 21 Oct 2020 10:41:29 +0800</lastBuildDate><atom:link href="https://phoenixioser.github.io/categories/flutter/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 21 Oct 2020 10:50:11 +0800</lastBuildDate><atom:link href="http://techchao.com/categories/flutter/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>【译】Flutter动画系列隐式动画</title>
-      <link>https://phoenixioser.github.io/blog/flutter_animation_implict/</link>
+      <title>【译】Flutter动画系列——显示动画</title>
+      <link>http://techchao.com/blog/flutter_animation_explict/</link>
+      <pubDate>Wed, 21 Oct 2020 10:50:11 +0800</pubDate>
+      
+      <guid>http://techchao.com/blog/flutter_animation_explict/</guid>
+      <description>在Flutter 动画详解系列——隐式动画中我们介绍了Flutter中的隐式动画，隐式动画创建简单、灵活性差，而显式动画相对来说更加灵活。接下来让我们来看看 Flutter 中的显式动画。
+Flutter内置显示动画FooTransition（Foo代表动画需要改变的属性值） 先来看一张图，下面列出了部分Flutter中内置的显式动画Widget： 我们可以通过直接使用上述的Widget，来创建显示动画，让我们以RotationTransition为例来看看显式动画如何创建。
+RotationTransition Demo // RotationTransition 构造器 RotationTransition({ Widget child, Alignment alignment, Animation&amp;lt;double&amp;gt; turns, }) child 指定哪个widget用来做旋转动画，alignment是坐标系原点的对齐方式，我们想要有银河星系的旋转效果使用center作为坐标系原点。turns：在API文档中定义是Animation抽象类型，turns是显示动画有别于隐式动画的的重要参数。我们使用隐式动画Widget AnimatedContainer 更改transform也能达到图片旋转的效果，但是隐式动画只会执行一次便会停止。借助于显式动画，我们不仅可以控制动画时间长，并可以让动画一直重复执行。
+创建AnimationController AnimationController 顾名思义，是用来控制动画，AnimationController 继承自抽象类Animation&amp;lt;double&amp;gt;,AnimationController 可以监听动画的执行、还能提供一些动画的控制操作。
+class _TimeMachineState extends State&amp;lt;TimeMachine&amp;gt; { AnimationController _animationController; @override void initState() { super.initState(); _animationController = AnimationController( // ... ); } @override void dispose() { _animationController.dispose(); super.dispose(); } } AnimationController 需要传递两个必要参数，duration 即我们动画的执行时间，默认 AnimationController 在给定的时间段内会线性的生成从0.0到1.0的数字。而具体值的数量和粒度取决于之前的duration参数。设置 vsync 时用来防止屏幕外动画（动画的UI不在当前屏幕时）消耗不必要的资源。 通过将SingleTickerProviderStateMixin添加到类定义中，可以将stateful对象作为vsync的值。
+class _TimeMachineState extends State&amp;lt;TimeMachine&amp;gt; with SingleTickerProviderStateMixin { AnimationController _animationController; @override void initState() { super.</description>
+    </item>
+    
+    <item>
+      <title>【译】Flutter动画系列——隐式动画</title>
+      <link>http://techchao.com/blog/flutter_animation_implict/</link>
       <pubDate>Wed, 21 Oct 2020 10:41:29 +0800</pubDate>
       
-      <guid>https://phoenixioser.github.io/blog/flutter_animation_implict/</guid>
+      <guid>http://techchao.com/blog/flutter_animation_implict/</guid>
       <description>上一篇文章【译】FLUTTER 动画系列—初篇，概述了下Flutter中的动画类型，及如何选择恰当的动画创建方式，接下来我们来看下最简单的动画，隐式动画。
 系统的隐式动画Widget 在 Flutter 中的 Widgets 中有一部已经实现隐式动画Widget。如下图列出部分：
 首先我们来看一段未使用动画的代码：
@@ -21,11 +35,11 @@
     </item>
     
     <item>
-      <title>【译】Flutter 动画系列—初篇</title>
-      <link>https://phoenixioser.github.io/blog/flutter_animation_start/</link>
+      <title>【译】Flutter 动画系列——初篇</title>
+      <link>http://techchao.com/blog/flutter_animation_start/</link>
       <pubDate>Tue, 20 Oct 2020 17:13:13 +0800</pubDate>
       
-      <guid>https://phoenixioser.github.io/blog/flutter_animation_start/</guid>
+      <guid>http://techchao.com/blog/flutter_animation_start/</guid>
       <description>前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 widget（特别是Material Design widgets），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。
  Flutter中动画的类型 在Flutter中动画分为两类： 基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。
 基于代码动画 在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。

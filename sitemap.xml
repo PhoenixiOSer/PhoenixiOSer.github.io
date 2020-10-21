@@ -2,14 +2,14 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <sitemap>
-    <loc>https://phoenixioser.github.io/en/sitemap.xml</loc>
+    <loc>http://techchao.com/zh-cn/sitemap.xml</loc>
+    
+      <lastmod>2020-10-21T10:50:11+08:00</lastmod>
     
   </sitemap>
   
   <sitemap>
-    <loc>https://phoenixioser.github.io/zh-cn/sitemap.xml</loc>
-    
-      <lastmod>2020-10-21T10:41:29+08:00</lastmod>
+    <loc>http://techchao.com/en/sitemap.xml</loc>
     
   </sitemap>
   

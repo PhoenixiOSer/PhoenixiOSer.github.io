@@ -3,44 +3,44 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://phoenixioser.github.io/en/categories/</loc>
+    <loc>http://techchao.com/en/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://phoenixioser.github.io/categories/"
+                href="http://techchao.com/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://phoenixioser.github.io/en/categories/"
+                href="http://techchao.com/en/categories/"
                 />
   </url>
   
   <url>
-    <loc>https://phoenixioser.github.io/en/tags/</loc>
+    <loc>http://techchao.com/en/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://phoenixioser.github.io/tags/"
+                href="http://techchao.com/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://phoenixioser.github.io/en/tags/"
+                href="http://techchao.com/en/tags/"
                 />
   </url>
   
   <url>
-    <loc>https://phoenixioser.github.io/en/</loc>
+    <loc>http://techchao.com/en/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="https://phoenixioser.github.io/"
+                href="http://techchao.com/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="https://phoenixioser.github.io/en/"
+                href="http://techchao.com/en/"
                 />
   </url>
   
