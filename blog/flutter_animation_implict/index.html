@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+  <meta charset="utf-8">
+<title>【译】Flutter动画系列隐式动画 - TechChao</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.75.0" /><meta itemprop="name" content="【译】Flutter动画系列隐式动画">
+<meta itemprop="description" content="上一篇文章【译】FLUTTER 动画系列—初篇，概述了下Flutter中的动画类型，及如何选择恰当的动画创建方式，接下来我们来看下最简单的动画，隐式动画。
+系统的隐式动画Widget 在 Flutter 中的 Widgets 中有一部已经实现隐式动画Widget。如下图列出部分：
+首先我们来看一段未使用动画的代码：
+ bool _bigger = false; @override Widget build(BuildContext context) { return Scaffold( body: Column( mainAxisAlignment: MainAxisAlignment.center, children: &lt;Widget&gt;[ Center( child: Container( width: _bigger ? 100 : 500, height: 100, color: Colors.red, ), ), RaisedButton( onPressed: () =&gt; setState(() { _bigger = !_bigger; }), child: Icon(Icons.star), ), ], ), ); } 未加动画效果时，矩形的形变会显得十分生硬，如果使用AnimatedContainer替换Container，增加一个动画的过渡效果：
+ Center( child: AnimatedContainer( width: _bigger ? 100 : 500, height: 100, color: Colors.">
+<meta itemprop="datePublished" content="2020-10-21T10:41:29+08:00" />
+<meta itemprop="dateModified" content="2020-10-21T10:41:29+08:00" />
+<meta itemprop="wordCount" content="428">
+<meta itemprop="image" content="">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta property="og:title" content="【译】Flutter动画系列隐式动画" />
+<meta property="og:description" content="上一篇文章【译】FLUTTER 动画系列—初篇，概述了下Flutter中的动画类型，及如何选择恰当的动画创建方式，接下来我们来看下最简单的动画，隐式动画。
+系统的隐式动画Widget 在 Flutter 中的 Widgets 中有一部已经实现隐式动画Widget。如下图列出部分：
+首先我们来看一段未使用动画的代码：
+ bool _bigger = false; @override Widget build(BuildContext context) { return Scaffold( body: Column( mainAxisAlignment: MainAxisAlignment.center, children: &lt;Widget&gt;[ Center( child: Container( width: _bigger ? 100 : 500, height: 100, color: Colors.red, ), ), RaisedButton( onPressed: () =&gt; setState(() { _bigger = !_bigger; }), child: Icon(Icons.star), ), ], ), ); } 未加动画效果时，矩形的形变会显得十分生硬，如果使用AnimatedContainer替换Container，增加一个动画的过渡效果：
+ Center( child: AnimatedContainer( width: _bigger ? 100 : 500, height: 100, color: Colors." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://phoenixioser.github.io/blog/flutter_animation_implict/" />
+<meta property="og:image" content="" />
+<meta property="article:published_time" content="2020-10-21T10:41:29+08:00" />
+<meta property="article:modified_time" content="2020-10-21T10:41:29+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content=""/>
+
+<meta name="twitter:title" content="【译】Flutter动画系列隐式动画"/>
+<meta name="twitter:description" content="上一篇文章【译】FLUTTER 动画系列—初篇，概述了下Flutter中的动画类型，及如何选择恰当的动画创建方式，接下来我们来看下最简单的动画，隐式动画。
+系统的隐式动画Widget 在 Flutter 中的 Widgets 中有一部已经实现隐式动画Widget。如下图列出部分：
+首先我们来看一段未使用动画的代码：
+ bool _bigger = false; @override Widget build(BuildContext context) { return Scaffold( body: Column( mainAxisAlignment: MainAxisAlignment.center, children: &lt;Widget&gt;[ Center( child: Container( width: _bigger ? 100 : 500, height: 100, color: Colors.red, ), ), RaisedButton( onPressed: () =&gt; setState(() { _bigger = !_bigger; }), child: Icon(Icons.star), ), ], ), ); } 未加动画效果时，矩形的形变会显得十分生硬，如果使用AnimatedContainer替换Container，增加一个动画的过渡效果：
+ Center( child: AnimatedContainer( width: _bigger ? 100 : 500, height: 100, color: Colors."/>
+<link rel="stylesheet" href="https://phoenixioser.github.io/css/bundle.min.ef567f57b0a317f77af9c245e86ebb69ffe1efd720341032112204c93f4af256.css" integrity="sha256-71Z/V7CjF/d6&#43;cJF6G67af/h79cgNBAyESIEyT9K8lY="><link rel="stylesheet" href="https://phoenixioser.github.io/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="https://phoenixioser.github.io/" class="nav">
+        
+          博客
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          <a href="https://phoenixioser.github.io/" class="nav link"><i class='fas fa-home'></i> 首页</a>
+        
+      
+        
+          
+          <a href="https://phoenixioser.github.io/categories/" class="nav link"><i class='fas fa-sitemap'></i> 分类</a>
+        
+      
+        
+          
+          <a href="https://phoenixioser.github.io/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+        
+      
+        
+          
+          <a href="https://phoenixioser.github.io/about/" class="nav link"><i class='far fa-id-card'></i> 关于</a>
+        
+      
+      
+      
+    </menu>
+    
+    
+    
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  
+  
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" >
+  <a href="https://phoenixioser.github.io/"><img src="https://phoenixioser.github.io/img/main/logo.jpg" class="circle" width="100" alt="TechChao" /></a>
+  <header>
+    <h1>TechChao</h1>
+  </header>
+  <main>
+    <p>平凡程序员写写东西的地方</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="https://phoenixioser.github.io/blog/flutter_animation_implict/">【译】Flutter动画系列隐式动画</a></h2>
+    
+    
+  </div>
+  <div class="meta">
+    <time datetime="2020-10-21 10:41:29 &#43;0800 CST">October 21, 2020</time>
+    
+    <p>3 分钟</p>
+  </div>
+</header>
+
+    <div class="content">
+      <a href="https://phoenixioser.github.io/blog/flutter_animation_implict/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80');">
+    <img class="" src="https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+      <p>上一篇文章【译】FLUTTER 动画系列—初篇，概述了下Flutter中的动画类型，及如何选择恰当的动画创建方式，接下来我们来看下最简单的动画，隐式动画。</p>
+<h2 id="系统的隐式动画widget">系统的隐式动画Widget</h2>
+<p>在 Flutter 中的 Widgets 中有一部已经实现隐式动画Widget。如下图列出部分：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1178839-040aab3570f88a63.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="implicit_animation.png"></p>
+<p>首先我们来看一段未使用动画的代码：</p>
+<pre><code> bool _bigger = false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: &lt;Widget&gt;[
+          Center(
+            child: Container(
+              width: _bigger ? 100 : 500,
+              height: 100,
+              color: Colors.red,
+            ),
+          ),
+          RaisedButton(
+            onPressed: () =&gt; setState(() {
+              _bigger = !_bigger;
+            }),
+            child: Icon(Icons.star),
+          ),
+        ],
+      ),
+    );
+  }
+</code></pre><p><img src="https://upload-images.jianshu.io/upload_images/1178839-2cd791b4aea9fdeb.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<p>未加动画效果时，矩形的形变会显得十分生硬，如果使用<code>AnimatedContainer</code>替换<code>Container</code>，增加一个动画的过渡效果：</p>
+<pre><code>  Center(
+            child: AnimatedContainer(
+              width: _bigger ? 100 : 500,
+              height: 100,
+              color: Colors.red,
+              duration: Duration(seconds: 1),
+            ),
+          ),
+</code></pre><p><img src="https://upload-images.jianshu.io/upload_images/1178839-38038d6545c616f4.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<p>整个过渡过程显得比较自然顺畅，我们通过新旧值之间的值进行动画处理的过程称为<a href="https://zh.wikipedia.org/wiki/%E6%8F%92%E5%80%BC">插值</a>。每当旧值和新值发生变化时，AnimatedContainer便会处理其属性插值。</p>
+<p>同样我们也可以通过插值来修改AnimatedContainer的其它属性，包括<code>decoration </code>的渐变色:</p>
+<pre><code>AnimatedContainer(
+  decoration: BoxDecoration(
+    gradient: RadialGradient(
+      colors: [Colors.purple, Colors.transparent],
+      stops: [ _bigger ? 0.2 : 0.5, 1.0])
+  ),
+),
+</code></pre><p>上述代码很简单的演示如何使用 隐式动画Widget 来实现动画效果，非常的方便简单，但这也意味着可灵活性较差，在隐式动画Widget中，我们控制动画效果只能控制动画时长（Duration）和动画的曲线（Curve,具体的曲线效果可以参考 <a href="https://api.flutter.dev/flutter/animation/Curves-class.html">系统自带的曲线效果</a>）。</p>
+<pre><code>AnimatedContainer(
+  width: _bigger ? 100 : 500,
+  child: Image.asset('assets/star.png'),
+  duration: Duration(seconds: 1),
+  curve: Curves.easeInOutQuint,
+),
+</code></pre><p>另外除了系统自带的曲线效果外，我们还可以通过继承<code>Curve</code>来实现自定义的曲线效果,如下实现了正弦曲线。</p>
+<pre><code>class SineCurve extends Curve {
+final double count;
+
+SineCurve({this.count = 1});
+
+@override
+double transformInternal(double t) {
+return sin(count * 2 * pi * t) * 0.5 + 0.5;
+}
+}
+
+</code></pre><h2 id="小结">小结</h2>
+<p>在Flutter中，系统已经提供了隐式动画的Widget，这些Widget是普通Widget的动画版本，我们可以通过 <code>duration</code>、<code>curve</code>来控制动画效果。</p>
+<p>还有我们不一定需要通过StatefulWidget中使用setState来生成动画效果，我们也可以使用<a href="https://api.flutter.dev/flutter/widgets/StreamBuilder-class.html">StreamBuilder</a>和<a href="https://api.flutter.dev/flutter/widgets/FutureBuilder-class.html">FutureBuilder</a>来触发动画。</p>
+<pre><code>FutureBuilder(
+  future: future,
+  builder: (BuildContext context, AsyncSnapshot&lt;String&gt; snapshot) {
+    double width;
+    switch(snapshot.connectionState) {
+      case ConnectionState.none:
+      case ConnectionState.waiting:
+      case ConnectionState.active:
+        width = 0;
+        break;
+      case ConnectionState.done:
+        width = 500;
+        break;
+    }
+    return AnimatedContainer(
+      width: width,
+      height: 100,
+      color: Colors.red,
+      duration: Duration(seconds: 1),
+    );
+  }
+),
+</code></pre><p>以上，如果Flutter框架提供给你的隐式动画Widget不能满足你的需求，那么进一步的话可以试试使用<code>TweenAnimationBuilder </code>来自定义创建隐式动画。</p>
+<h2 id="自定义隐式动画tweenanimationbuilder">自定义隐式动画TweenAnimationBuilder</h2>
+<p>使用TweenAnimationBuilder，该 Widget 使用的时候我们需要传递 duration 参数动画时间、tween 参数动画要设置的值的范围（补间）、重要的还有 builder 参数，builder函数的参数包含context、补间参数tween的类型、还有<code>child</code>,让我们看一个简单的例子，红色的矩形框旋转360度：</p>
+<pre><code>TweenAnimationBuilder&lt;double&gt;(
+            tween: Tween&lt;double&gt;(begin: 0, end: 2 * pi),
+            duration: Duration(seconds: 2),
+            builder: (BuildContext context, double angle, Widget child) {
+              return Transform.rotate(
+                angle: angle,
+                child: Container(
+                  color: Colors.red,
+                  width: 100,
+                  height: 100,
+                ),
+              );
+            },
+          ),
+</code></pre><p><img src="https://upload-images.jianshu.io/upload_images/1178839-52c0425a76eedc8e.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<p>让我们再来看个例子，使用<code>ColorFilered</code> Wideget做一个图片渲染的效果。</p>
+<pre><code>TweenAnimationBuilder(
+  tween: ColorTween(begin: Colors.white, end: Colors.red),
+  duration: Duration(seconds: 2),
+  builder: (_, Color color, __) {
+    return ColorFiltered(
+      child: Image.asset('assets/sun.png'),
+      colorFilter: ColorFilter.mode(color, BlendMode.modulate),
+    );
+  },
+)
+</code></pre><p><img src="https://upload-images.jianshu.io/upload_images/1178839-522191654955dedc.gif?imageMogr2/auto-orient/strip" alt=""></p>
+<p>通过Tween补间参数设置了从白色到红色的过渡，由颜色和图片的混合，另外如何补间参数可变的，所以如果补间参数是不变的话可以将参数声明为静态常量来使用。</p>
+<pre><code>static final colorTween = ColorTween(begin: Colors.white, end: Colors.red);
+
+Center(
+          child: TweenAnimationBuilder&lt;Color&gt;(
+            tween: colorTween,
+            duration: Duration(seconds: 2),
+            builder: (_, Color color, __) {
+              return ColorFiltered(
+                child: Image.asset('assets/sun.png'),
+                colorFilter: ColorFilter.mode(color, BlendMode.modulate),
+              );
+            },
+          ),
+        ),
+</code></pre><h3 id="动态修改-tween-参数">动态修改 Tween 参数</h3>
+<p>上面的例子中我们并没有调用setState，仅仅展示了动画从Tween的初始值到终值的简单动画效果，除此之外，我们还可以通过动态的修改Tween来实现动画效果：</p>
+<pre><code>class OngoingAnimationByModifyingEndTweenValue extends StatefulWidget {
+  @override
+  _OngoingAnimationState createState() =&gt; _OngoingAnimationState();
+}
+
+class _OngoingAnimationState extends State&lt;OngoingAnimationByModifyingEndTweenValue&gt; {
+  double _newValue = .4;
+  Color _newColor = Colors.white;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: &lt;Widget&gt;[
+        starsBackground,
+        Column(
+          children: &lt;Widget&gt;[
+            Center(
+              child: TweenAnimationBuilder(
+                tween: ColorTween(begin: Colors.white, end: _newColor),
+                duration: Duration(seconds: 2),
+                builder: (_, Color color, __) {
+                  return ColorFiltered(
+                    child: Image.asset('assets/sun.png'),
+                    colorFilter: ColorFilter.mode(color, BlendMode.modulate),
+                  );
+                },
+              ),
+            ),
+            Slider.adaptive(
+              value: _newValue,
+              onChanged: (double value) {
+                setState(() {
+                  _newValue = value;
+                  _newColor = Color.lerp(Colors.white, Colors.red, value);
+                });
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+</code></pre><p>首先我们声明一个<code>_newColor </code> 作为 Tween 的终值,通过滑动 <code>Slider</code> Widget，我们改变<code>_newColor</code>。调用setState每次的滑动都会使得动画更新。</p>
+<p>另外，需要明确的一点事，TweenAnimationBuilder 的动画属性值是从当前值向最新的终值转变的。如上面的例子，当我们拖动 Slider 时，颜色变化相对于之前的颜色,而不是每次从最初的白色开始动画渐变。</p>
+<p>TweenAnimationBuilder 总会将当前颜色到终值颜色平滑的动画过渡。所以如果改变的不是终值颜色而是开始颜色，动画效果是不会有区别的。</p>
+<h2 id="补充说明">补充说明</h2>
+<p>除了上诉介绍的TweenAnimationBuilder参数外，我们还需要注意的参数还有：</p>
+<ul>
+<li>curve，动画曲线，在上一篇文章<a href="https://www.jianshu.com/p/f22b6c705925">Flutter 动画详解系列</a>有过介绍。</li>
+<li>动画完成的回调 <code>onEnd :</code>，我们可以在动画完成时完成指定的操作，如动画完成后显示另一个Widget。</li>
+<li>child参数，child参数的设置其实也是一个潜在的性能优化项，正确的设置child，对动画性能的提升也是一大帮助。例子中虽然颜色发生了变化，但图片本身保持不变，但是当前代码是每次build都会重新创建Image Widget。针对此类的优化方式，我们可以提前创建图片，将图片作为参数传入，这样 Flutter 就知道每帧渲染时变化的是颜色，而不是图片本身。 当然因为例子本身简单，所以此优化不会有明显的效果，但当实现复杂动画效果时，慎重考虑child的实现，将会对你的动画性能带来一定的帮助。</li>
+</ul>
+<h2 id="总结">总结</h2>
+<p>OK，以上就是对 Flutter 中的隐式动画的介绍了，包括系统自带的<code>AnimatedFoo</code>和<code>TweenAnimationBuilder </code>都有了一定的涉及。包括如何不通过使用<code>StatefulWidget</code>来实现动画效果、如何改变<code>tween</code>的终值产生顺滑的动画效果、如何提升<code>TweenAnimationBuilder </code>的动画性能时，我们可以设置tween参数时可以考虑设置为静态常量，设置child参数时可以考虑提前创建好child，作为参数传递。</p>
+
+    </div>
+    <footer>
+      <div class="stats">
+  
+    <ul class="categories">
+      
+        
+          <li><a class="article-terms-link" href="https://phoenixioser.github.io/categories/flutter/">Flutter</a></li>
+        
+      
+    </ul>
+  
+  
+    <ul class="tags">
+      <li>None</li>
+    </ul>
+  
+</div>
+
+    </footer>
+  </article>
+  
+    
+  <article class="post">
+    
+    <div>
+      <h2 id="say-something">说些什么</h2>
+        <form id="comment-form" class="new-comment" method="POST">
+          
+          <h3 class='reply-notice hidden'>
+            <span class='reply-name'></span>
+          </h3>
+
+          
+          <input type="hidden" name="options[entryId]" value="cf6ea01b3809404c928cc02e562e9456">
+          <input type='hidden' name='fields[replyThread]' value=''>
+          <input type='hidden' name='fields[replyID]' value=''>
+          <input type='hidden' name='fields[replyName]' value=''>
+
+          
+          <input required name='fields[name]' type='text' placeholder='你的名字'>
+          <input name='fields[website]' type='text' placeholder='您的网页'>
+          <input required name='fields[email]' type='email' placeholder='你的邮件'>
+          <textarea required name='fields[body]' placeholder='你的信息' rows='10'></textarea>
+
+          
+          
+
+          
+          <div class='submit-notice'>
+            <strong class='submit-notice-text submit-success hidden'>感谢您的评论！被批准后它会立即在此站点展示。</strong>
+            <strong class='submit-notice-text submit-failed hidden'>很抱歉，您的提交存在错误。请确保所有必填字段都已填写正确，然后再试一次。</strong>
+          </div>
+
+          
+          <input type='submit' value='送出' class='button'>
+          <input type='submit' value='已送出' class='hidden button' disabled>
+          <input type='reset' value='重设' class='button'>
+        </form>
+    </div>
+
+    
+    <div>
+      <h2>评论</h2>
+    </div>
+  </article>
+
+
+  
+  <div class="pagination">
+    
+    
+      <a href="https://phoenixioser.github.io/blog/flutter_animation_start/" class="button right"><span>【译】Flutter 动画系列—初篇</span></a>
+    
+  </div>
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>最新文章</h1>
+      </header>
+      
+      <article class="mini-post">
+          <a href="https://phoenixioser.github.io/blog/flutter_animation_implict/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80');">
+    <img class="" src="https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+        <header>
+          <h2><a href="https://phoenixioser.github.io/blog/flutter_animation_implict/">【译】Flutter动画系列隐式动画</a></h2>
+          <time class="published" datetime="2020-10-21 10:41:29 &#43;0800 CST">October 21, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://phoenixioser.github.io/blog/flutter_animation_start/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80');">
+    <img class="" src="https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+        <header>
+          <h2><a href="https://phoenixioser.github.io/blog/flutter_animation_start/">【译】Flutter 动画系列—初篇</a></h2>
+          <time class="published" datetime="2020-10-20 17:13:13 &#43;0800 CST">October 20, 2020</time>
+        </header>
+      </article>
+      
+      
+    </section>
+  
+
+  
+    
+
+      <section id="categories">
+        <header>
+          <h1><a href="https://phoenixioser.github.io/categories">分类</a></h1>
+        </header>
+        <ul>
+          
+          
+          <li>
+              <a href="https://phoenixioser.github.io/categories/flutter/">flutter<span class="count">2</span></a>
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>关于</h1>
+      </header>
+      <p>一个会点 Flutter 的 iOSer</p>
+      <footer>
+        <a href="https://phoenixioser.github.io/about" class="button">查看更多</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+  
+  <p class="copyright">
+    © 2020 TechChao
+      <br>
+    主题: <a href='https://themes.gohugo.io/hugo-future-imperfect-slim/' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br> | 由 <a href='https://gohugo.io/' target='_blank' rel='noopener' title='0.75.0'>Hugo</a> 驱动
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="https://phoenixioser.github.io/js/highlight.js"></script>
+    
+    <script>hljs.initHighlightingOnLoad();</script><script src="https://phoenixioser.github.io/js/bundle.min.5955090a3253deadcd66071270aa2274dabe15ffc97094cec252d87b6f3f00bf.js" integrity="sha256-WVUJCjJT3q3NZgcScKoidNq&#43;Ff/JcJTOwlLYe28/AL8="></script>
+    <script src="https://phoenixioser.github.io/js/add-on.js"></script>
+    </div>
+  </body>
+</html>

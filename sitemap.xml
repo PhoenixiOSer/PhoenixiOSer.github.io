@@ -2,14 +2,14 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <sitemap>
-    <loc>https://example.com/zh-cn/sitemap.xml</loc>
-    
-      <lastmod>2020-10-20T17:13:13+08:00</lastmod>
+    <loc>https://phoenixioser.github.io/en/sitemap.xml</loc>
     
   </sitemap>
   
   <sitemap>
-    <loc>https://example.com/en/sitemap.xml</loc>
+    <loc>https://phoenixioser.github.io/zh-cn/sitemap.xml</loc>
+    
+      <lastmod>2020-10-21T10:41:29+08:00</lastmod>
     
   </sitemap>
   

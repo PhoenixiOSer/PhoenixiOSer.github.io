@@ -2,17 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Flutter on TechChao</title>
-    <link>https://example.com/categories/flutter/</link>
+    <link>https://phoenixioser.github.io/categories/flutter/</link>
     <description>Recent content in Flutter on TechChao</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 20 Oct 2020 17:13:13 +0800</lastBuildDate><atom:link href="https://example.com/categories/flutter/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 21 Oct 2020 10:41:29 +0800</lastBuildDate><atom:link href="https://phoenixioser.github.io/categories/flutter/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>【译】Flutter动画系列隐式动画</title>
+      <link>https://phoenixioser.github.io/blog/flutter_animation_implict/</link>
+      <pubDate>Wed, 21 Oct 2020 10:41:29 +0800</pubDate>
+      
+      <guid>https://phoenixioser.github.io/blog/flutter_animation_implict/</guid>
+      <description>上一篇文章【译】FLUTTER 动画系列—初篇，概述了下Flutter中的动画类型，及如何选择恰当的动画创建方式，接下来我们来看下最简单的动画，隐式动画。
+系统的隐式动画Widget 在 Flutter 中的 Widgets 中有一部已经实现隐式动画Widget。如下图列出部分：
+首先我们来看一段未使用动画的代码：
+ bool _bigger = false; @override Widget build(BuildContext context) { return Scaffold( body: Column( mainAxisAlignment: MainAxisAlignment.center, children: &amp;lt;Widget&amp;gt;[ Center( child: Container( width: _bigger ? 100 : 500, height: 100, color: Colors.red, ), ), RaisedButton( onPressed: () =&amp;gt; setState(() { _bigger = !_bigger; }), child: Icon(Icons.star), ), ], ), ); } 未加动画效果时，矩形的形变会显得十分生硬，如果使用AnimatedContainer替换Container，增加一个动画的过渡效果：
+ Center( child: AnimatedContainer( width: _bigger ? 100 : 500, height: 100, color: Colors.</description>
+    </item>
+    
     <item>
       <title>【译】Flutter 动画系列—初篇</title>
-      <link>https://example.com/blog/flutter_animation_start/</link>
+      <link>https://phoenixioser.github.io/blog/flutter_animation_start/</link>
       <pubDate>Tue, 20 Oct 2020 17:13:13 +0800</pubDate>
       
-      <guid>https://example.com/blog/flutter_animation_start/</guid>
+      <guid>https://phoenixioser.github.io/blog/flutter_animation_start/</guid>
       <description>前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 widget（特别是Material Design widgets），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。
  Flutter中动画的类型 在Flutter中动画分为两类： 基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。
 基于代码动画 在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。

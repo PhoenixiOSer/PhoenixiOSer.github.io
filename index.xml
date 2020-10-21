@@ -2,17 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>TechChao</title>
-    <link>https://example.com/</link>
+    <link>https://phoenixioser.github.io/</link>
     <description>Recent content on TechChao</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 20 Oct 2020 17:13:13 +0800</lastBuildDate><atom:link href="https://example.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 21 Oct 2020 10:41:29 +0800</lastBuildDate><atom:link href="https://phoenixioser.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>【译】Flutter动画系列隐式动画</title>
+      <link>https://phoenixioser.github.io/blog/flutter_animation_implict/</link>
+      <pubDate>Wed, 21 Oct 2020 10:41:29 +0800</pubDate>
+      
+      <guid>https://phoenixioser.github.io/blog/flutter_animation_implict/</guid>
+      <description>上一篇文章【译】FLUTTER 动画系列—初篇，概述了下Flutter中的动画类型，及如何选择恰当的动画创建方式，接下来我们来看下最简单的动画，隐式动画。
+系统的隐式动画Widget 在 Flutter 中的 Widgets 中有一部已经实现隐式动画Widget。如下图列出部分：
+首先我们来看一段未使用动画的代码：
+ bool _bigger = false; @override Widget build(BuildContext context) { return Scaffold( body: Column( mainAxisAlignment: MainAxisAlignment.center, children: &amp;lt;Widget&amp;gt;[ Center( child: Container( width: _bigger ? 100 : 500, height: 100, color: Colors.red, ), ), RaisedButton( onPressed: () =&amp;gt; setState(() { _bigger = !_bigger; }), child: Icon(Icons.star), ), ], ), ); } 未加动画效果时，矩形的形变会显得十分生硬，如果使用AnimatedContainer替换Container，增加一个动画的过渡效果：
+ Center( child: AnimatedContainer( width: _bigger ? 100 : 500, height: 100, color: Colors.</description>
+    </item>
+    
     <item>
       <title>【译】Flutter 动画系列—初篇</title>
-      <link>https://example.com/blog/flutter_animation_start/</link>
+      <link>https://phoenixioser.github.io/blog/flutter_animation_start/</link>
       <pubDate>Tue, 20 Oct 2020 17:13:13 +0800</pubDate>
       
-      <guid>https://example.com/blog/flutter_animation_start/</guid>
+      <guid>https://phoenixioser.github.io/blog/flutter_animation_start/</guid>
       <description>前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 widget（特别是Material Design widgets），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。
  Flutter中动画的类型 在Flutter中动画分为两类： 基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。
 基于代码动画 在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。
@@ -30,10 +43,10 @@
     
     <item>
       <title>关于我</title>
-      <link>https://example.com/about/</link>
+      <link>https://phoenixioser.github.io/about/</link>
       <pubDate>Mon, 19 Oct 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/about/</guid>
+      <guid>https://phoenixioser.github.io/about/</guid>
       <description> 余武超/男/1991 本科/东华理工大学/信息管理与信息系统 工作年限：6年 期望职位：iOS高级程序员 期望城市：上海 Github：https://github.com/yuwuchaio  联系方式  手机：17621373658 Email：656733936@qq.com  工作经历 上海狮搏实业投资有限公司 （2017年4月 ~ 至今 ） 88共享出行 88共享出行是一款为用户提供便捷、安全、实惠的“共享化”出行解决方案的App。平台目前有拼车、共享汽车、共享班车三个业务模块，相互支撑，满足工作通勤和休闲出行的需求。
 主要工作：
  负责推动项目的组件化，采用 cocoapods 抽取基础组件（日志、分享、工具分类、本地存储等）及功能组件（支付、地图、定位），分离拼车、班车、租车等业务线。通过中间路由完成各模块间的调用。 在开发过程中定期对App的ipa包大小压缩（通过图片压缩、LinkMap 结合 Mach-O删除未使用的代码） 结合 WKWebView 和 前端约定，制定 App 和前端的交互方式替换原先传统拦截跳转方式。 搭建（Fastlane + pgyer）自动打包测试环境，提升测试效率。  上海逸尚信息咨询有限公司 （ 2015年10月 ~ 2017年4月 ） 优料宝 优料宝是一个面向设计师的O2O面料营销平台，主要是为面料商和设计师提供直接沟通的平台。
