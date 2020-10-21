@@ -3,76 +3,76 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://techchao.com/blog/</loc>
+    <loc>https://techchao.com/blog/</loc>
     <lastmod>2020-10-21T10:50:11+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://techchao.com/categories/</loc>
-    <lastmod>2020-10-21T10:50:11+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="http://techchao.com/en/categories/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="http://techchao.com/categories/"
-                />
-  </url>
-  
-  <url>
-    <loc>http://techchao.com/categories/flutter/</loc>
-    <lastmod>2020-10-21T10:50:11+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://techchao.com/</loc>
+    <loc>https://techchao.com/categories/</loc>
     <lastmod>2020-10-21T10:50:11+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://techchao.com/en/"
+                href="https://techchao.com/en/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="http://techchao.com/"
+                href="https://techchao.com/categories/"
                 />
   </url>
   
   <url>
-    <loc>http://techchao.com/blog/flutter_animation_explict/</loc>
+    <loc>https://techchao.com/categories/flutter/</loc>
     <lastmod>2020-10-21T10:50:11+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://techchao.com/blog/flutter_animation_implict/</loc>
+    <loc>https://techchao.com/</loc>
+    <lastmod>2020-10-21T10:50:11+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://techchao.com/en/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://techchao.com/"
+                />
+  </url>
+  
+  <url>
+    <loc>https://techchao.com/blog/flutter_animation_explict/</loc>
+    <lastmod>2020-10-21T10:50:11+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://techchao.com/blog/flutter_animation_implict/</loc>
     <lastmod>2020-10-21T10:41:29+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://techchao.com/blog/flutter_animation_start/</loc>
+    <loc>https://techchao.com/blog/flutter_animation_start/</loc>
     <lastmod>2020-10-20T17:13:13+08:00</lastmod>
   </url>
   
   <url>
-    <loc>http://techchao.com/about/</loc>
+    <loc>https://techchao.com/about/</loc>
     <lastmod>2020-10-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://techchao.com/tags/</loc>
+    <loc>https://techchao.com/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://techchao.com/en/tags/"
+                href="https://techchao.com/en/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="http://techchao.com/tags/"
+                href="https://techchao.com/tags/"
                 />
   </url>
   

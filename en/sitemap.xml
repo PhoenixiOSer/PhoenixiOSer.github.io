@@ -3,44 +3,44 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://techchao.com/en/categories/</loc>
+    <loc>https://techchao.com/en/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="http://techchao.com/categories/"
+                href="https://techchao.com/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://techchao.com/en/categories/"
+                href="https://techchao.com/en/categories/"
                 />
   </url>
   
   <url>
-    <loc>http://techchao.com/en/tags/</loc>
+    <loc>https://techchao.com/en/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="http://techchao.com/tags/"
+                href="https://techchao.com/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://techchao.com/en/tags/"
+                href="https://techchao.com/en/tags/"
                 />
   </url>
   
   <url>
-    <loc>http://techchao.com/en/</loc>
+    <loc>https://techchao.com/en/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="http://techchao.com/"
+                href="https://techchao.com/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://techchao.com/en/"
+                href="https://techchao.com/en/"
                 />
   </url>
   
