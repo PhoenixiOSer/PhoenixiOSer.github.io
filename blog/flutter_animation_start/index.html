@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+  <meta charset="utf-8">
+<title>【译】Flutter 动画系列—初篇 - TechChao</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.75.0" /><meta itemprop="name" content="【译】Flutter 动画系列—初篇">
+<meta itemprop="description" content="前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 widget（特别是Material Design widgets），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。
+ Flutter中动画的类型 在Flutter中动画分为两类： 基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。
+基于代码动画 在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。
+补间(Tween)动画 Tween意为在两者之间，在Tween动画中我们定义开始点和结束点、时间线以及定义转换时间和速度的曲线。然后就交由框架完成如何从开始点过渡到结束点的动画效果。
+拟物动画 拟物动画是对真实世界的行为进行建模，使动画效果类似于现实中的物理效果。例如当你掷球时，它在何处落地，取决于抛球速度有多快、球有多重、距离地面有多远。
+如何创建恰当的动画 在知道 Flutter 的动画类型之后，我们需要知道如何创建我们想要的动画效果，在 Flutter 动画也被分为隐式动画、 显示动画。当我们创建一个动画效果时，如果你不知道如何选择这两种方式，你可以试着回答下面的三个问题：
+  动画效果是否&quot;永远&quot;重复？永远是指某个条件下动画一直重复，当条件变动时，动画可以停止。
+  动画的值是否不连续？如下图圆从小到大、从小到大，并未连续的小-&gt;大-&gt;小-&gt;大。   动画是否由多个Widgets共同组成？   如果以上三个问题，都是肯定的回答，那么你需要的是显示动画，否则使用隐式动画将会是你更好的选择。
+隐式动画 如果你选择了隐式动画之后，首先你可以尝试在 Flutter 框架中寻找符合你要求的 Widgets，Flutter 对隐式动画的命名方式一般为 AnimatedFoo， 其中 Foo 是需要设置动画的属性。如果找不到符合自己需求的内置动画Widget，我们可以使用 TweenAnimationBuilder（补间动画生成器）创建自定义的隐式动画。
+显示动画 如果你的选择是显示动画，那么你也可以尝试在 Flutter 框架中寻找符合 Widgets。Flutter 对显示动画的命名方式一般为FooTransition， 其中 Foo 是需要设置动画的属性（如SlideTransition）。如果找不到符合自己需求的内置动画Widget。你还有两种选择，创建独立的动画Widget（扩展AnimatedWidget），或者扩展Widget（使用AnimatedBuilder）。
+如果在动画执行的过程中，碰到了性能的问题的话，我们可以考虑使用CustomPainter进行动画处理.
+小结 以上我们了解了动画的类型以及如何选择创建动画方式。通过下面的动画决策树，可以帮助你选择最适合你的动画方式:
+当然动画的难易程度已从隐式动画、显式动画、自定义绘制CustomPainter递增。 .">
+<meta itemprop="datePublished" content="2020-10-20T17:13:13+08:00" />
+<meta itemprop="dateModified" content="2020-10-20T17:13:13+08:00" />
+<meta itemprop="wordCount" content="59">
+<meta itemprop="image" content="">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta property="og:title" content="【译】Flutter 动画系列—初篇" />
+<meta property="og:description" content="前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 widget（特别是Material Design widgets），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。
+ Flutter中动画的类型 在Flutter中动画分为两类： 基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。
+基于代码动画 在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。
+补间(Tween)动画 Tween意为在两者之间，在Tween动画中我们定义开始点和结束点、时间线以及定义转换时间和速度的曲线。然后就交由框架完成如何从开始点过渡到结束点的动画效果。
+拟物动画 拟物动画是对真实世界的行为进行建模，使动画效果类似于现实中的物理效果。例如当你掷球时，它在何处落地，取决于抛球速度有多快、球有多重、距离地面有多远。
+如何创建恰当的动画 在知道 Flutter 的动画类型之后，我们需要知道如何创建我们想要的动画效果，在 Flutter 动画也被分为隐式动画、 显示动画。当我们创建一个动画效果时，如果你不知道如何选择这两种方式，你可以试着回答下面的三个问题：
+  动画效果是否&quot;永远&quot;重复？永远是指某个条件下动画一直重复，当条件变动时，动画可以停止。
+  动画的值是否不连续？如下图圆从小到大、从小到大，并未连续的小-&gt;大-&gt;小-&gt;大。   动画是否由多个Widgets共同组成？   如果以上三个问题，都是肯定的回答，那么你需要的是显示动画，否则使用隐式动画将会是你更好的选择。
+隐式动画 如果你选择了隐式动画之后，首先你可以尝试在 Flutter 框架中寻找符合你要求的 Widgets，Flutter 对隐式动画的命名方式一般为 AnimatedFoo， 其中 Foo 是需要设置动画的属性。如果找不到符合自己需求的内置动画Widget，我们可以使用 TweenAnimationBuilder（补间动画生成器）创建自定义的隐式动画。
+显示动画 如果你的选择是显示动画，那么你也可以尝试在 Flutter 框架中寻找符合 Widgets。Flutter 对显示动画的命名方式一般为FooTransition， 其中 Foo 是需要设置动画的属性（如SlideTransition）。如果找不到符合自己需求的内置动画Widget。你还有两种选择，创建独立的动画Widget（扩展AnimatedWidget），或者扩展Widget（使用AnimatedBuilder）。
+如果在动画执行的过程中，碰到了性能的问题的话，我们可以考虑使用CustomPainter进行动画处理.
+小结 以上我们了解了动画的类型以及如何选择创建动画方式。通过下面的动画决策树，可以帮助你选择最适合你的动画方式:
+当然动画的难易程度已从隐式动画、显式动画、自定义绘制CustomPainter递增。 ." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://example.com/blog/flutter_animation_start/" />
+<meta property="og:image" content="" />
+<meta property="article:published_time" content="2020-10-20T17:13:13+08:00" />
+<meta property="article:modified_time" content="2020-10-20T17:13:13+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content=""/>
+
+<meta name="twitter:title" content="【译】Flutter 动画系列—初篇"/>
+<meta name="twitter:description" content="前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 widget（特别是Material Design widgets），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。
+ Flutter中动画的类型 在Flutter中动画分为两类： 基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。
+基于代码动画 在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。
+补间(Tween)动画 Tween意为在两者之间，在Tween动画中我们定义开始点和结束点、时间线以及定义转换时间和速度的曲线。然后就交由框架完成如何从开始点过渡到结束点的动画效果。
+拟物动画 拟物动画是对真实世界的行为进行建模，使动画效果类似于现实中的物理效果。例如当你掷球时，它在何处落地，取决于抛球速度有多快、球有多重、距离地面有多远。
+如何创建恰当的动画 在知道 Flutter 的动画类型之后，我们需要知道如何创建我们想要的动画效果，在 Flutter 动画也被分为隐式动画、 显示动画。当我们创建一个动画效果时，如果你不知道如何选择这两种方式，你可以试着回答下面的三个问题：
+  动画效果是否&quot;永远&quot;重复？永远是指某个条件下动画一直重复，当条件变动时，动画可以停止。
+  动画的值是否不连续？如下图圆从小到大、从小到大，并未连续的小-&gt;大-&gt;小-&gt;大。   动画是否由多个Widgets共同组成？   如果以上三个问题，都是肯定的回答，那么你需要的是显示动画，否则使用隐式动画将会是你更好的选择。
+隐式动画 如果你选择了隐式动画之后，首先你可以尝试在 Flutter 框架中寻找符合你要求的 Widgets，Flutter 对隐式动画的命名方式一般为 AnimatedFoo， 其中 Foo 是需要设置动画的属性。如果找不到符合自己需求的内置动画Widget，我们可以使用 TweenAnimationBuilder（补间动画生成器）创建自定义的隐式动画。
+显示动画 如果你的选择是显示动画，那么你也可以尝试在 Flutter 框架中寻找符合 Widgets。Flutter 对显示动画的命名方式一般为FooTransition， 其中 Foo 是需要设置动画的属性（如SlideTransition）。如果找不到符合自己需求的内置动画Widget。你还有两种选择，创建独立的动画Widget（扩展AnimatedWidget），或者扩展Widget（使用AnimatedBuilder）。
+如果在动画执行的过程中，碰到了性能的问题的话，我们可以考虑使用CustomPainter进行动画处理.
+小结 以上我们了解了动画的类型以及如何选择创建动画方式。通过下面的动画决策树，可以帮助你选择最适合你的动画方式:
+当然动画的难易程度已从隐式动画、显式动画、自定义绘制CustomPainter递增。 ."/>
+<link rel="stylesheet" href="https://example.com/css/bundle.min.ef567f57b0a317f77af9c245e86ebb69ffe1efd720341032112204c93f4af256.css" integrity="sha256-71Z/V7CjF/d6&#43;cJF6G67af/h79cgNBAyESIEyT9K8lY="><link rel="stylesheet" href="https://example.com/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="https://example.com/" class="nav">
+        
+          博客
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          <a href="https://example.com/" class="nav link"><i class='fas fa-home'></i> 首页</a>
+        
+      
+        
+          
+          <a href="https://example.com/categories/" class="nav link"><i class='fas fa-sitemap'></i> 分类</a>
+        
+      
+        
+          
+          <a href="https://example.com/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+        
+      
+        
+          
+          <a href="https://example.com/about/" class="nav link"><i class='far fa-id-card'></i> 关于</a>
+        
+      
+      
+      
+    </menu>
+    
+    
+    
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  
+  
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" >
+  <a href="https://example.com/"><img src="https://example.com/img/main/logo.jpg" class="circle" width="100" alt="TechChao" /></a>
+  <header>
+    <h1>TechChao</h1>
+  </header>
+  <main>
+    <p>平凡程序员写写东西的地方</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="https://example.com/blog/flutter_animation_start/">【译】Flutter 动画系列—初篇</a></h2>
+    
+    
+  </div>
+  <div class="meta">
+    <time datetime="2020-10-20 17:13:13 &#43;0800 CST">October 20, 2020</time>
+    <p>TechChao</p>
+    <p>1 分钟</p>
+  </div>
+</header>
+
+    <div class="content">
+      <a href="https://example.com/blog/flutter_animation_start/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80');">
+    <img class="" src="https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+      <blockquote>
+<p>前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 <code>widget</code>（特别是<code>Material Design widgets</code>），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。</p>
+</blockquote>
+<!-- more -->
+<h2 id="flutter中动画的类型">Flutter中动画的类型</h2>
+<p>在<code>Flutter</code>中动画分为两类：  基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。</p>
+<h2 id="基于代码动画">基于代码动画</h2>
+<p>在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。</p>
+<h3 id="补间tween动画">补间(Tween)动画</h3>
+<p><code>Tween</code>意为在两者之间，在<code>Tween</code>动画中我们定义开始点和结束点、时间线以及定义转换时间和速度的曲线。然后就交由框架完成如何从开始点过渡到结束点的动画效果。</p>
+<h3 id="拟物动画">拟物动画</h3>
+<p>拟物动画是对真实世界的行为进行建模，使动画效果类似于现实中的物理效果。例如当你掷球时，它在何处落地，取决于抛球速度有多快、球有多重、距离地面有多远。</p>
+<h2 id="如何创建恰当的动画">如何创建恰当的动画</h2>
+<p>在知道 <code>Flutter</code> 的动画类型之后，我们需要知道如何创建我们想要的动画效果，在 Flutter 动画也被分为隐式动画、 显示动画。当我们创建一个动画效果时，如果你不知道如何选择这两种方式，你可以试着回答下面的三个问题：</p>
+<ul>
+<li>
+<p>动画效果是否&quot;永远&quot;重复？永远是指某个条件下动画一直重复，当条件变动时，动画可以停止。</p>
+</li>
+<li>
+<p>动画的值是否不连续？如下图圆从小到大、从小到大，并未连续的小-&gt;大-&gt;小-&gt;大。
+<img src="https://upload-images.jianshu.io/upload_images/1178839-e520d8160d6ac8e3.gif?imageMogr2/auto-orient/strip" alt="不连续"></p>
+</li>
+<li>
+<p>动画是否由多个Widgets共同组成？
+<img src="https://upload-images.jianshu.io/upload_images/1178839-0ce9a742b2a977a2.gif?imageMogr2/auto-orient/strip" alt="多widgets动画"></p>
+</li>
+</ul>
+<p>如果以上三个问题，都是肯定的回答，那么你需要的是显示动画，否则使用隐式动画将会是你更好的选择。</p>
+<h3 id="隐式动画">隐式动画</h3>
+<p>如果你选择了隐式动画之后，首先你可以尝试在 Flutter 框架中寻找符合你要求的 Widgets，Flutter 对隐式动画的命名方式一般为 <code>AnimatedFoo</code>， 其中 <code>Foo</code> 是需要设置动画的属性。如果找不到符合自己需求的内置动画Widget，我们可以使用 <code>TweenAnimationBuilder</code>（补间动画生成器）创建自定义的隐式动画。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1178839-601b0f22280f887a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+<h3 id="显示动画">显示动画</h3>
+<p>如果你的选择是显示动画，那么你也可以尝试在 Flutter 框架中寻找符合 <code>Widgets</code>。Flutter 对显示动画的命名方式一般为<code>FooTransition</code>， 其中 <code>Foo</code> 是需要设置动画的属性（如<code>SlideTransition</code>）。如果找不到符合自己需求的内置动画Widget。你还有两种选择，创建独立的动画Widget（扩展AnimatedWidget），或者扩展Widget（使用AnimatedBuilder）。</p>
+<p>如果在动画执行的过程中，碰到了性能的问题的话，我们可以考虑使用<code>CustomPainter</code>进行动画处理.</p>
+<h2 id="小结">小结</h2>
+<p>以上我们了解了动画的类型以及如何选择创建动画方式。通过下面的动画决策树，可以帮助你选择最适合你的动画方式:</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/1178839-0506787ffd430de5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="flutter_animation.png"></p>
+<p>当然动画的难易程度已从隐式动画、显式动画、自定义绘制CustomPainter递增。
+<img src="https://upload-images.jianshu.io/upload_images/1178839-e0d5bc769f4d60f0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="难易度.png">.</p>
+
+    </div>
+    <footer>
+      <div class="stats">
+  
+    <ul class="categories">
+      
+        
+          <li><a class="article-terms-link" href="https://example.com/categories/flutter/">Flutter</a></li>
+        
+      
+    </ul>
+  
+  
+    <ul class="tags">
+      <li>None</li>
+    </ul>
+  
+</div>
+
+    </footer>
+  </article>
+  
+    
+  <article class="post">
+    
+    <div>
+      <h2 id="say-something">说些什么</h2>
+        <form id="comment-form" class="new-comment" method="POST">
+          
+          <h3 class='reply-notice hidden'>
+            <span class='reply-name'></span>
+          </h3>
+
+          
+          <input type="hidden" name="options[entryId]" value="1079edfca7db66546fa7988355e18876">
+          <input type='hidden' name='fields[replyThread]' value=''>
+          <input type='hidden' name='fields[replyID]' value=''>
+          <input type='hidden' name='fields[replyName]' value=''>
+
+          
+          <input required name='fields[name]' type='text' placeholder='你的名字'>
+          <input name='fields[website]' type='text' placeholder='您的网页'>
+          <input required name='fields[email]' type='email' placeholder='你的邮件'>
+          <textarea required name='fields[body]' placeholder='你的信息' rows='10'></textarea>
+
+          
+          
+
+          
+          <div class='submit-notice'>
+            <strong class='submit-notice-text submit-success hidden'>感谢您的评论！被批准后它会立即在此站点展示。</strong>
+            <strong class='submit-notice-text submit-failed hidden'>很抱歉，您的提交存在错误。请确保所有必填字段都已填写正确，然后再试一次。</strong>
+          </div>
+
+          
+          <input type='submit' value='送出' class='button'>
+          <input type='submit' value='已送出' class='hidden button' disabled>
+          <input type='reset' value='重设' class='button'>
+        </form>
+    </div>
+
+    
+    <div>
+      <h2>评论</h2>
+    </div>
+  </article>
+
+
+  
+  <div class="pagination">
+    
+    
+  </div>
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>最新文章</h1>
+      </header>
+      
+      <article class="mini-post">
+          <a href="https://example.com/blog/flutter_animation_start/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80');">
+    <img class="" src="https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+        <header>
+          <h2><a href="https://example.com/blog/flutter_animation_start/">【译】Flutter 动画系列—初篇</a></h2>
+          <time class="published" datetime="2020-10-20 17:13:13 &#43;0800 CST">October 20, 2020</time>
+        </header>
+      </article>
+      
+      
+    </section>
+  
+
+  
+    
+
+      <section id="categories">
+        <header>
+          <h1><a href="https://example.com/categories">分类</a></h1>
+        </header>
+        <ul>
+          
+          
+          <li>
+              <a href="https://example.com/categories/flutter/">flutter<span class="count">1</span></a>
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>关于</h1>
+      </header>
+      <p>一个会点 Flutter 的 iOSer</p>
+      <footer>
+        <a href="https://example.com/about" class="button">查看更多</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+  
+  <p class="copyright">
+    © 2020 TechChao
+      <br>
+    主题: <a href='https://themes.gohugo.io/hugo-future-imperfect-slim/' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br> | 由 <a href='https://gohugo.io/' target='_blank' rel='noopener' title='0.75.0'>Hugo</a> 驱动
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="https://example.com/js/highlight.js"></script>
+    
+    <script>hljs.initHighlightingOnLoad();</script><script src="https://example.com/js/bundle.min.b4776136bf9d934e52e6ed871e063596bd248370eb3345ec4d49a884121c2161.js" integrity="sha256-tHdhNr&#43;dk05S5u2HHgY1lr0kg3DrM0XsTUmohBIcIWE="></script>
+    <script src="https://example.com/js/add-on.js"></script>
+    </div>
+  </body>
+</html>

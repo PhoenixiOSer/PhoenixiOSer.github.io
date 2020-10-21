@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TechChao</title>
+    <link>https://example.com/</link>
+    <description>Recent content on TechChao</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 20 Oct 2020 17:13:13 +0800</lastBuildDate><atom:link href="https://example.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>【译】Flutter 动画系列—初篇</title>
+      <link>https://example.com/blog/flutter_animation_start/</link>
+      <pubDate>Tue, 20 Oct 2020 17:13:13 +0800</pubDate>
+      
+      <guid>https://example.com/blog/flutter_animation_start/</guid>
+      <description>前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 widget（特别是Material Design widgets），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。
+ Flutter中动画的类型 在Flutter中动画分为两类： 基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。
+基于代码动画 在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。
+补间(Tween)动画 Tween意为在两者之间，在Tween动画中我们定义开始点和结束点、时间线以及定义转换时间和速度的曲线。然后就交由框架完成如何从开始点过渡到结束点的动画效果。
+拟物动画 拟物动画是对真实世界的行为进行建模，使动画效果类似于现实中的物理效果。例如当你掷球时，它在何处落地，取决于抛球速度有多快、球有多重、距离地面有多远。
+如何创建恰当的动画 在知道 Flutter 的动画类型之后，我们需要知道如何创建我们想要的动画效果，在 Flutter 动画也被分为隐式动画、 显示动画。当我们创建一个动画效果时，如果你不知道如何选择这两种方式，你可以试着回答下面的三个问题：
+  动画效果是否&amp;quot;永远&amp;quot;重复？永远是指某个条件下动画一直重复，当条件变动时，动画可以停止。
+  动画的值是否不连续？如下图圆从小到大、从小到大，并未连续的小-&amp;gt;大-&amp;gt;小-&amp;gt;大。   动画是否由多个Widgets共同组成？   如果以上三个问题，都是肯定的回答，那么你需要的是显示动画，否则使用隐式动画将会是你更好的选择。
+隐式动画 如果你选择了隐式动画之后，首先你可以尝试在 Flutter 框架中寻找符合你要求的 Widgets，Flutter 对隐式动画的命名方式一般为 AnimatedFoo， 其中 Foo 是需要设置动画的属性。如果找不到符合自己需求的内置动画Widget，我们可以使用 TweenAnimationBuilder（补间动画生成器）创建自定义的隐式动画。
+显示动画 如果你的选择是显示动画，那么你也可以尝试在 Flutter 框架中寻找符合 Widgets。Flutter 对显示动画的命名方式一般为FooTransition， 其中 Foo 是需要设置动画的属性（如SlideTransition）。如果找不到符合自己需求的内置动画Widget。你还有两种选择，创建独立的动画Widget（扩展AnimatedWidget），或者扩展Widget（使用AnimatedBuilder）。
+如果在动画执行的过程中，碰到了性能的问题的话，我们可以考虑使用CustomPainter进行动画处理.
+小结 以上我们了解了动画的类型以及如何选择创建动画方式。通过下面的动画决策树，可以帮助你选择最适合你的动画方式:
+当然动画的难易程度已从隐式动画、显式动画、自定义绘制CustomPainter递增。 .</description>
+    </item>
+    
+    <item>
+      <title>关于我</title>
+      <link>https://example.com/about/</link>
+      <pubDate>Mon, 19 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://example.com/about/</guid>
+      <description> 余武超/男/1991 本科/东华理工大学/信息管理与信息系统 工作年限：6年 期望职位：iOS高级程序员 期望城市：上海 Github：https://github.com/yuwuchaio  联系方式  手机：17621373658 Email：656733936@qq.com  工作经历 上海狮搏实业投资有限公司 （2017年4月 ~ 至今 ） 88共享出行 88共享出行是一款为用户提供便捷、安全、实惠的“共享化”出行解决方案的App。平台目前有拼车、共享汽车、共享班车三个业务模块，相互支撑，满足工作通勤和休闲出行的需求。
+主要工作：
+ 负责推动项目的组件化，采用 cocoapods 抽取基础组件（日志、分享、工具分类、本地存储等）及功能组件（支付、地图、定位），分离拼车、班车、租车等业务线。通过中间路由完成各模块间的调用。 在开发过程中定期对App的ipa包大小压缩（通过图片压缩、LinkMap 结合 Mach-O删除未使用的代码） 结合 WKWebView 和 前端约定，制定 App 和前端的交互方式替换原先传统拦截跳转方式。 搭建（Fastlane + pgyer）自动打包测试环境，提升测试效率。  上海逸尚信息咨询有限公司 （ 2015年10月 ~ 2017年4月 ） 优料宝 优料宝是一个面向设计师的O2O面料营销平台，主要是为面料商和设计师提供直接沟通的平台。
+主要工作：个人作为核心开发在项目中负责产品模块、会员模块、购物车模块、环信聊天模块及公用模块的开发维护。
+ 在开发的过程中优化了公司代码的公共库类（减少公共库间的依赖，降低代码的耦合性。做到库之间尽量独立）。 与后台一起，独立完成环信聊天模块。 由于Apple审核时长的特殊性，主动调研使用JSpatch编写Hotfix脚本集成在项目中使用，补充了线上事故的补救能力（目前由于苹果审核规则现已经下线使用）。  国美在线电子商务有限公司（北京）（ 2014年7月 ~ 2015年8月 ） 国美 国美是国美电器唯一官方网上商城App，中国领先的专业家电网购平台。
+主要工作：个人在项目中负责会员中心模块。主要负责钱包、订单、优惠券、登录。
+ 参与项目日常任务开发、维护及自测工作. 使用Analyze分析代码中潜在问题、使用Instrument检测内存泄漏、分析代码的执行时间等。 参与需求评审并开发、讨论API接口设计、交互改善。 参加Code Review，确保提交高质量的代码，完成开发任务。  技能清单  精通Objective-C语言，熟悉 Objective-C 的底层原理、内存管理。 熟悉runtime、runloop机制,了解 Swift。 熟悉常用存储技术：FMDB、NSUserDefaults。 熟悉 iOS 常用开发工具：Instrument、Charles 、Wireshark 熟悉协议相关：HTTP/HTTPS、TCP/IP。 熟练掌握SVN、Git、cocoapods及GitFlow开发流程 熟悉常用的三方库AFNetwork、SDWebImaage、YYModel、ASpect等。  </description>
+    </item>
+    
+  </channel>
+</rss>
