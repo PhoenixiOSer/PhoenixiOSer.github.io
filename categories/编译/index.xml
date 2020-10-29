@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Blog on TechChao</title>
-    <link>https://techchao.com/blog/</link>
-    <description>Recent content in Blog on TechChao</description>
+    <title>编译 on TechChao</title>
+    <link>https://techchao.com/categories/%E7%BC%96%E8%AF%91/</link>
+    <description>Recent content in 编译 on TechChao</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 29 Oct 2020 18:56:18 +0800</lastBuildDate><atom:link href="https://techchao.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 29 Oct 2020 18:56:18 +0800</lastBuildDate><atom:link href="https://techchao.com/categories/%E7%BC%96%E8%AF%91/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>读《程序员的自我修养-链接、装载与库》—— 基础知识</title>
       <link>https://techchao.com/blog/link_load/</link>
@@ -33,54 +33,6 @@ I/O控制 操作系统位于硬件的上层，是对硬件的管理和抽象。�
 互斥锁 互斥量（Mutex）和二元信号量很类似，资源仅同时允许一个线程访问，但和信号量不同的是，信号量在整个系统可以被任意线程获取并释放，也就是说，同一个信号量可以被系统中的一个线程获取之后由另一个线程释放。而互斥量则要求哪个线程获取了互斥量，哪个线程就要负责释放这个锁，其他线程越俎代庖去释放互斥量是无效的。（ pthread_mutex ）
 读写锁 读写锁（Read-Write Lock）致力于一种更加特定的场合的同步。主要针对一些多度单写的情况。读取数据并不会造成数据的不安全。线程可以同时读取数据。只要发生写时才需要锁。对于同一个锁，读写锁有两种获取方式，共享的（Shared）或独占的（Exclusive）。当锁处于自由的状态时，试图以任何一种方式获取锁都能成功，并将锁置于对应的状态。如果锁处于共享状态，其他线程以共享的方式获取锁仍然会成功，此时这个锁分配给了多个线程。然而，如果其他线程试图以独占的方式获取已经处于共享状态的锁，那么它将必须等待锁被所有的线程释放。相应地，处于独占状态的锁将阻止任何其他线程获取该锁，不论它们试图以哪种方式获取。（pthread_rwlock、iOS 可以通过dispatch_barrier_async 实现类似功能）
 条件锁 条件变量（Condition Variable）作为一种同步手段，作用类似于一个栅栏。对于条件变量，线程可以有两种操作，首先线程可以等待条件变量，一个条件变量可以被多个线程等待。其次，线程可以唤醒条件变量，此时某个或所有等待此条件变量的线程都会被唤醒并继续支持。（iOS 中的NSConditionLock）</description>
-    </item>
-    
-    <item>
-      <title>【译】Flutter动画系列——显示动画</title>
-      <link>https://techchao.com/blog/flutter_animation_explict/</link>
-      <pubDate>Wed, 21 Oct 2020 10:50:11 +0800</pubDate>
-      
-      <guid>https://techchao.com/blog/flutter_animation_explict/</guid>
-      <description>在Flutter 动画详解系列——隐式动画中我们介绍了Flutter中的隐式动画，隐式动画创建简单、灵活性差，而显式动画相对来说更加灵活。接下来让我们来看看 Flutter 中的显式动画。
-Flutter内置显示动画FooTransition（Foo代表动画需要改变的属性值） 先来看一张图，下面列出了部分Flutter中内置的显式动画Widget： 我们可以通过直接使用上述的Widget，来创建显示动画，让我们以RotationTransition为例来看看显式动画如何创建。
-RotationTransition Demo // RotationTransition 构造器 RotationTransition({ Widget child, Alignment alignment, Animation&amp;lt;double&amp;gt; turns, }) child 指定哪个widget用来做旋转动画，alignment是坐标系原点的对齐方式，我们想要有银河星系的旋转效果使用center作为坐标系原点。turns：在API文档中定义是Animation抽象类型，turns是显示动画有别于隐式动画的的重要参数。我们使用隐式动画Widget AnimatedContainer 更改transform也能达到图片旋转的效果，但是隐式动画只会执行一次便会停止。借助于显式动画，我们不仅可以控制动画时间长，并可以让动画一直重复执行。
-创建AnimationController AnimationController 顾名思义，是用来控制动画，AnimationController 继承自抽象类Animation&amp;lt;double&amp;gt;,AnimationController 可以监听动画的执行、还能提供一些动画的控制操作。
-class _TimeMachineState extends State&amp;lt;TimeMachine&amp;gt; { AnimationController _animationController; @override void initState() { super.initState(); _animationController = AnimationController( // ... ); } @override void dispose() { _animationController.dispose(); super.dispose(); } } AnimationController 需要传递两个必要参数，duration 即我们动画的执行时间，默认 AnimationController 在给定的时间段内会线性的生成从0.0到1.0的数字。而具体值的数量和粒度取决于之前的duration参数。设置 vsync 时用来防止屏幕外动画（动画的UI不在当前屏幕时）消耗不必要的资源。 通过将SingleTickerProviderStateMixin添加到类定义中，可以将stateful对象作为vsync的值。
-class _TimeMachineState extends State&amp;lt;TimeMachine&amp;gt; with SingleTickerProviderStateMixin { AnimationController _animationController; @override void initState() { super.</description>
-    </item>
-    
-    <item>
-      <title>【译】Flutter动画系列——隐式动画</title>
-      <link>https://techchao.com/blog/flutter_animation_implict/</link>
-      <pubDate>Wed, 21 Oct 2020 10:41:29 +0800</pubDate>
-      
-      <guid>https://techchao.com/blog/flutter_animation_implict/</guid>
-      <description>上一篇文章【译】FLUTTER 动画系列—初篇，概述了下Flutter中的动画类型，及如何选择恰当的动画创建方式，接下来我们来看下最简单的动画，隐式动画。
-系统的隐式动画Widget 在 Flutter 中的 Widgets 中有一部已经实现隐式动画Widget。如下图列出部分：
-首先我们来看一段未使用动画的代码：
- bool _bigger = false; @override Widget build(BuildContext context) { return Scaffold( body: Column( mainAxisAlignment: MainAxisAlignment.center, children: &amp;lt;Widget&amp;gt;[ Center( child: Container( width: _bigger ? 100 : 500, height: 100, color: Colors.red, ), ), RaisedButton( onPressed: () =&amp;gt; setState(() { _bigger = !_bigger; }), child: Icon(Icons.star), ), ], ), ); } 未加动画效果时，矩形的形变会显得十分生硬，如果使用AnimatedContainer替换Container，增加一个动画的过渡效果：
- Center( child: AnimatedContainer( width: _bigger ? 100 : 500, height: 100, color: Colors.</description>
-    </item>
-    
-    <item>
-      <title>【译】Flutter 动画系列——初篇</title>
-      <link>https://techchao.com/blog/flutter_animation_start/</link>
-      <pubDate>Tue, 20 Oct 2020 17:13:13 +0800</pubDate>
-      
-      <guid>https://techchao.com/blog/flutter_animation_start/</guid>
-      <description>前言：动画会让用户界面感觉更直观、流畅，能改善用户体验。 在Flutter中我们可以轻松实现各种动画类型。目前Flutter中很多 widget（特别是Material Design widgets），都实现了设计规范中定义的标准动画效果。但是我们也可以自定义这些动画效果。
- Flutter中动画的类型 在Flutter中动画分为两类： 基于图形动画（以图形的形式制作动画，三方库 Rive 、Lottie）、基于代码动画 （主要针对于 Widgets 的大小、 颜色、形状变动）。文章主要讲解基于代码动画类型的动画。
-基于代码动画 在 Flutter 中基于代码动画，也主要分为两种形式：补间(Tween)动画、 拟物动画。
-补间(Tween)动画 Tween意为在两者之间，在Tween动画中我们定义开始点和结束点、时间线以及定义转换时间和速度的曲线。然后就交由框架完成如何从开始点过渡到结束点的动画效果。
-拟物动画 拟物动画是对真实世界的行为进行建模，使动画效果类似于现实中的物理效果。例如当你掷球时，它在何处落地，取决于抛球速度有多快、球有多重、距离地面有多远。
-如何创建恰当的动画 在知道 Flutter 的动画类型之后，我们需要知道如何创建我们想要的动画效果，在 Flutter 动画也被分为隐式动画、 显示动画。当我们创建一个动画效果时，如果你不知道如何选择这两种方式，你可以试着回答下面的三个问题：
-  动画效果是否&amp;quot;永远&amp;quot;重复？永远是指某个条件下动画一直重复，当条件变动时，动画可以停止。
-  动画的值是否不连续？如下图圆从小到大、从小到大，并未连续的小-&amp;gt;大-&amp;gt;小-&amp;gt;大。   动画是否由多个Widgets共同组成？   如果以上三个问题，都是肯定的回答，那么你需要的是显示动画，否则使用隐式动画将会是你更好的选择。
-隐式动画 如果你选择了隐式动画之后，首先你可以尝试在 Flutter 框架中寻找符合你要求的 Widgets，Flutter 对隐式动画的命名方式一般为 AnimatedFoo， 其中 Foo 是需要设置动画的属性。如果找不到符合自己需求的内置动画Widget，我们可以使用 TweenAnimationBuilder（补间动画生成器）创建自定义的隐式动画。
-显示动画 如果你的选择是显示动画，那么你也可以尝试在 Flutter 框架中寻找符合 Widgets。Flutter 对显示动画的命名方式一般为FooTransition， 其中 Foo 是需要设置动画的属性（如SlideTransition）。如果找不到符合自己需求的内置动画Widget。你还有两种选择，创建独立的动画Widget（扩展AnimatedWidget），或者扩展Widget（使用AnimatedBuilder）。
-如果在动画执行的过程中，碰到了性能的问题的话，我们可以考虑使用CustomPainter进行动画处理.
-小结 以上我们了解了动画的类型以及如何选择创建动画方式。通过下面的动画决策树，可以帮助你选择最适合你的动画方式:
-当然动画的难易程度已从隐式动画、显式动画、自定义绘制CustomPainter递增。 .</description>
     </item>
     
   </channel>
