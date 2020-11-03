@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+  <meta charset="utf-8">
+<title>读《程序员的自我修养-链接、装载与库》—— 编译和链接 - TechChao</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.75.0" /><meta itemprop="name" content="读《程序员的自我修养-链接、装载与库》—— 编译和链接">
+<meta itemprop="description" content="编译和链接 被隐藏了的过程 在开发过程中我们主要的开发环境都是流行的继承开发环境（IDE），如 Visual Studio、Xcode、等。IDE将编译和链接的过程一步完成（通常称之为构建 | Build）。这一过程都被隐藏在了代码程序的下层。
+我们以C 语言入门级程序 hello.c为例：
+#include &quot;stdio.h&quot; int main() { printf(&quot;Hello World\n&quot;); return 0; } 我们可以使用 gcc 最简单的命令进行编译
+$gcc hello.c $./a.out Hello World 事实上，上述过程分为4个步骤分别是预处理（Prepressing）、编译（Compilation）、汇编（Assembly）和链接（Linking）。
+预处理阶段 第一步预编译的过程相当于如下命令（-E表示只进行预编译）：
+gcc -E hello.c -o hello.i 预编译工作是处理以**&quot;#&quot;**开头的预编译指令，如#include、#import、#define等，主要规则如下：
+ 将所有#define删除，展开替换所有的宏定义。 处理所有条件预编译指令，如#if、#ifdef、#elif、#else、#endif。 处理#include预编译指令，将被包含的文件插入到该预编译指令的位置。（递归进行，如果文件还包含其他文件也会被一起插入） 删除所有的注释，如 //,/** */等 添加行号、和文件名标识,如# 10 &quot;hello.c&quot; 2，以便于编译时编译器产生调试用的行号信息及用于编译时产生编译错误或警告时能够显示行号。 保留所有的 #pragma 编译器指令，因为编译器会使用它们  编译阶段 编译的过程是一系列的 词法分析、语法分析、语义分析及优化后生产相应的汇编代码文件，这块是整个程序构建的核心，也是最复杂的部分，但不是本书的重点，所以只会介绍一些基本内容。下面是编译代码的命令：
+gcc -S hello.i -o hello.s 或者直接通过
+gcc -S hello.c -o hello.s 都可以得到汇编输出的文件hello.s,对于C语言来说，预编译和编译的程序是cc1，对于C&#43;&#43;是c11plus，Objective-C 是 cc1obj等。
+汇编阶段 汇编器是将汇编代码转换为机器可以执行的指令，每条汇编语句几乎都对应一条机器指令。所以汇编器的过程相对于编译器的过程相对来说比较简单。">
+<meta itemprop="datePublished" content="2020-11-02T16:03:45+08:00" />
+<meta itemprop="dateModified" content="2020-11-02T16:03:45+08:00" />
+<meta itemprop="wordCount" content="313">
+<meta itemprop="image" content="">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta property="og:title" content="读《程序员的自我修养-链接、装载与库》—— 编译和链接" />
+<meta property="og:description" content="编译和链接 被隐藏了的过程 在开发过程中我们主要的开发环境都是流行的继承开发环境（IDE），如 Visual Studio、Xcode、等。IDE将编译和链接的过程一步完成（通常称之为构建 | Build）。这一过程都被隐藏在了代码程序的下层。
+我们以C 语言入门级程序 hello.c为例：
+#include &quot;stdio.h&quot; int main() { printf(&quot;Hello World\n&quot;); return 0; } 我们可以使用 gcc 最简单的命令进行编译
+$gcc hello.c $./a.out Hello World 事实上，上述过程分为4个步骤分别是预处理（Prepressing）、编译（Compilation）、汇编（Assembly）和链接（Linking）。
+预处理阶段 第一步预编译的过程相当于如下命令（-E表示只进行预编译）：
+gcc -E hello.c -o hello.i 预编译工作是处理以**&quot;#&quot;**开头的预编译指令，如#include、#import、#define等，主要规则如下：
+ 将所有#define删除，展开替换所有的宏定义。 处理所有条件预编译指令，如#if、#ifdef、#elif、#else、#endif。 处理#include预编译指令，将被包含的文件插入到该预编译指令的位置。（递归进行，如果文件还包含其他文件也会被一起插入） 删除所有的注释，如 //,/** */等 添加行号、和文件名标识,如# 10 &quot;hello.c&quot; 2，以便于编译时编译器产生调试用的行号信息及用于编译时产生编译错误或警告时能够显示行号。 保留所有的 #pragma 编译器指令，因为编译器会使用它们  编译阶段 编译的过程是一系列的 词法分析、语法分析、语义分析及优化后生产相应的汇编代码文件，这块是整个程序构建的核心，也是最复杂的部分，但不是本书的重点，所以只会介绍一些基本内容。下面是编译代码的命令：
+gcc -S hello.i -o hello.s 或者直接通过
+gcc -S hello.c -o hello.s 都可以得到汇编输出的文件hello.s,对于C语言来说，预编译和编译的程序是cc1，对于C&#43;&#43;是c11plus，Objective-C 是 cc1obj等。
+汇编阶段 汇编器是将汇编代码转换为机器可以执行的指令，每条汇编语句几乎都对应一条机器指令。所以汇编器的过程相对于编译器的过程相对来说比较简单。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://techchao.com/blog/link_load2/" />
+<meta property="og:image" content="" />
+<meta property="article:published_time" content="2020-11-02T16:03:45+08:00" />
+<meta property="article:modified_time" content="2020-11-02T16:03:45+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content=""/>
+
+<meta name="twitter:title" content="读《程序员的自我修养-链接、装载与库》—— 编译和链接"/>
+<meta name="twitter:description" content="编译和链接 被隐藏了的过程 在开发过程中我们主要的开发环境都是流行的继承开发环境（IDE），如 Visual Studio、Xcode、等。IDE将编译和链接的过程一步完成（通常称之为构建 | Build）。这一过程都被隐藏在了代码程序的下层。
+我们以C 语言入门级程序 hello.c为例：
+#include &quot;stdio.h&quot; int main() { printf(&quot;Hello World\n&quot;); return 0; } 我们可以使用 gcc 最简单的命令进行编译
+$gcc hello.c $./a.out Hello World 事实上，上述过程分为4个步骤分别是预处理（Prepressing）、编译（Compilation）、汇编（Assembly）和链接（Linking）。
+预处理阶段 第一步预编译的过程相当于如下命令（-E表示只进行预编译）：
+gcc -E hello.c -o hello.i 预编译工作是处理以**&quot;#&quot;**开头的预编译指令，如#include、#import、#define等，主要规则如下：
+ 将所有#define删除，展开替换所有的宏定义。 处理所有条件预编译指令，如#if、#ifdef、#elif、#else、#endif。 处理#include预编译指令，将被包含的文件插入到该预编译指令的位置。（递归进行，如果文件还包含其他文件也会被一起插入） 删除所有的注释，如 //,/** */等 添加行号、和文件名标识,如# 10 &quot;hello.c&quot; 2，以便于编译时编译器产生调试用的行号信息及用于编译时产生编译错误或警告时能够显示行号。 保留所有的 #pragma 编译器指令，因为编译器会使用它们  编译阶段 编译的过程是一系列的 词法分析、语法分析、语义分析及优化后生产相应的汇编代码文件，这块是整个程序构建的核心，也是最复杂的部分，但不是本书的重点，所以只会介绍一些基本内容。下面是编译代码的命令：
+gcc -S hello.i -o hello.s 或者直接通过
+gcc -S hello.c -o hello.s 都可以得到汇编输出的文件hello.s,对于C语言来说，预编译和编译的程序是cc1，对于C&#43;&#43;是c11plus，Objective-C 是 cc1obj等。
+汇编阶段 汇编器是将汇编代码转换为机器可以执行的指令，每条汇编语句几乎都对应一条机器指令。所以汇编器的过程相对于编译器的过程相对来说比较简单。"/>
+<link rel="stylesheet" href="https://techchao.com/css/bundle.min.ef567f57b0a317f77af9c245e86ebb69ffe1efd720341032112204c93f4af256.css" integrity="sha256-71Z/V7CjF/d6&#43;cJF6G67af/h79cgNBAyESIEyT9K8lY="><link rel="stylesheet" href="https://techchao.com/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="https://techchao.com/" class="nav">
+        
+          博客
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          <a href="https://techchao.com/" class="nav link"><i class='fas fa-home'></i> 首页</a>
+        
+      
+        
+          
+          <a href="https://techchao.com/categories/" class="nav link"><i class='fas fa-sitemap'></i> 分类</a>
+        
+      
+        
+          
+          <a href="https://techchao.com/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+        
+      
+        
+          
+          <a href="https://techchao.com/about/" class="nav link"><i class='far fa-id-card'></i> 关于</a>
+        
+      
+      
+      
+    </menu>
+    
+    
+    
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  
+  
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" >
+  <a href="https://techchao.com/"><img src="https://techchao.com/img/main/logo.jpg" class="circle" width="100" alt="TechChao" /></a>
+  <header>
+    <h1>TechChao</h1>
+  </header>
+  <main>
+    <p>一个平凡程序员写写东西的地方</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="https://techchao.com/blog/link_load2/">读《程序员的自我修养-链接、装载与库》—— 编译和链接</a></h2>
+    
+    
+  </div>
+  <div class="meta">
+    <time datetime="2020-11-02 16:03:45 &#43;0800 CST">November 2, 2020</time>
+    <p>TechChao</p>
+    <p>2 分钟</p>
+  </div>
+</header>
+
+    <div class="content">
+      <a href="https://techchao.com/blog/link_load2/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1587321174565-73cffc72e10a?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1949&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1587321174565-73cffc72e10a?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1949&amp;q=80" alt="">
+  </a>
+      <h2 id="编译和链接">编译和链接</h2>
+<h3 id="被隐藏了的过程">被隐藏了的过程</h3>
+<p>在开发过程中我们主要的开发环境都是流行的继承开发环境（IDE），如 Visual Studio、Xcode、等。IDE将编译和链接的过程一步完成（通常称之为构建 | Build）。这一过程都被隐藏在了代码程序的下层。</p>
+<p>我们以C 语言入门级程序 <code>hello.c</code>为例：</p>
+<pre><code>#include &quot;stdio.h&quot;
+
+int main() {
+    printf(&quot;Hello World\n&quot;);
+    return 0;
+}
+
+</code></pre><p>我们可以使用 gcc 最简单的命令进行编译</p>
+<pre><code>$gcc hello.c
+$./a.out
+Hello World
+</code></pre><p>事实上，上述过程分为4个步骤分别是预处理（Prepressing）、编译（Compilation）、汇编（Assembly）和链接（Linking）。</p>
+<p><img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/Image00088.jpg?raw=true" alt=""></p>
+<h4 id="预处理阶段">预处理阶段</h4>
+<p>第一步预编译的过程相当于如下命令（-E表示只进行预编译）：</p>
+<pre><code>gcc -E hello.c -o hello.i
+</code></pre><p>预编译工作是处理以**&quot;#&quot;**开头的预编译指令，如<code>#include</code>、<code>#import</code>、<code>#define</code>等，主要规则如下：</p>
+<ul>
+<li>将所有<code>#define</code>删除，展开替换所有的宏定义。</li>
+<li>处理所有条件预编译指令，如<code>#if</code>、<code>#ifdef</code>、<code>#elif</code>、<code>#else</code>、<code>#endif</code>。</li>
+<li>处理<code>#include</code>预编译指令，将被包含的文件插入到该预编译指令的位置。（递归进行，如果文件还包含其他文件也会被一起插入）</li>
+<li>删除所有的注释，如 <code>//</code>,<code>/** */</code>等</li>
+<li>添加行号、和文件名标识,如<code># 10 &quot;hello.c&quot; 2</code>，以便于编译时编译器产生调试用的行号信息及用于编译时产生编译错误或警告时能够显示行号。</li>
+<li>保留所有的 #pragma 编译器指令，因为编译器会使用它们</li>
+</ul>
+<h4 id="编译阶段">编译阶段</h4>
+<p>编译的过程是一系列的 词法分析、语法分析、语义分析及优化后生产相应的汇编代码文件，这块是整个程序构建的核心，也是最复杂的部分，但不是本书的重点，所以只会介绍一些基本内容。下面是编译代码的命令：</p>
+<pre><code>gcc -S hello.i -o hello.s
+</code></pre><p>或者直接通过</p>
+<pre><code>gcc -S hello.c -o hello.s
+</code></pre><p>都可以得到汇编输出的文件hello.s,对于C语言来说，预编译和编译的程序是cc1，对于C++是c11plus，Objective-C 是 cc1obj等。</p>
+<h4 id="汇编阶段">汇编阶段</h4>
+<p>汇编器是将汇编代码转换为机器可以执行的指令，每条汇编语句几乎都对应一条机器指令。所以汇编器的过程相对于编译器的过程相对来说比较简单。</p>
+<pre><code>as hello.s -o hello.o
+</code></pre><p>或者直接从源代码开始直接输出目标文件.o</p>
+<pre><code>as hello.c -o hello.o
+</code></pre><h4 id="链接阶段">链接阶段</h4>
+<p>链接是一个比较让人费解的过程，为什么汇编器输入的是目标文件而不是直接输出可执行文件，链接过程需要包含什么内容？为什么需要链接？这些问题需要我们学到后面才能知晓，先来看看如何链接当前的目标文件 <code>hello.o</code> 吧（Mac上运行gcc编译器好像指向的clang下面命令行中路径都不存在无法运行成功&hellip;.先跳过吧）。</p>
+<pre><code>ld -static /usr/lib/crt1.o /usr/lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.1.3/
+crtbeginT.o -L/usr/lib/gcc/i486-linux-gnu/4.1.3 -L/usr/lib -L/lib hello.o --
+start-group -lgcc -lgcc_eh -lc --end-group /usr/lib/gcc/i486-linux-gnu/4.1.3/
+crtend.o /usr/lib/crtn.o
+
+</code></pre><p>可以看到，我们需要将一大堆文件链接起来才可以得到可以最终执行的.o文件。可能很多读者的疑惑更多了，crt1.o、crti.o、crtbeginT.o、crtend.o、crtn.o这些文件是什么？它们做什么用的 ？-lgcc –lgcc_eh –lc 这些都是什么参数？为什么要使用它们？为什么要将它们和hello.o链接起来才可以得到可执行文件？等等。 关于这些问题的答案，正式这本书的内容，所以需要我们将整本书读完才会有一个完整答案，而非一蹴而就的得到一个似是而非的答案。</p>
+<h3 id="编译器">编译器</h3>
+<h4 id="编译器做了什么">编译器做了什么</h4>
+<p>从最直观的角度出发，编译器就是将高级语言翻译成机器语言的一个工具。比如我们使用 C/C++ 语言写的一个程序可以通过编译器将其翻译成机器可以执行的指令和数据。</p>
+<p>编译的过程一般分为6步：</p>
+<ul>
+<li>扫描(词法分析)</li>
+<li>语法分析</li>
+<li>语义分析</li>
+<li>源代码优化</li>
+<li>代码生成</li>
+<li>目标代码优化</li>
+</ul>
+<p><img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/Image00035.jpg?raw=true" alt=""></p>
+<p>还是以 C 语言的源代码为例：</p>
+<pre><code>array[index] = (index + 4) * (2 + 6)
+</code></pre><h5 id="扫描">扫描</h5>
+<p>经过扫描器扫描后（词法分析）将源代码的字符序列分割成一系列的记号（Token）。比如上面这行程序总共包含28个非空字符串，经扫描后，产生16个记号：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">记号</th>
+<th style="text-align:center">类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">array</td>
+<td style="text-align:center">标识符</td>
+</tr>
+<tr>
+<td style="text-align:center">[</td>
+<td style="text-align:center">左方括号</td>
+</tr>
+<tr>
+<td style="text-align:center">index</td>
+<td style="text-align:center">标识符</td>
+</tr>
+<tr>
+<td style="text-align:center">]</td>
+<td style="text-align:center">右方括号</td>
+</tr>
+<tr>
+<td style="text-align:center">=</td>
+<td style="text-align:center">赋值</td>
+</tr>
+<tr>
+<td style="text-align:center">（</td>
+<td style="text-align:center">左圆括号</td>
+</tr>
+<tr>
+<td style="text-align:center">index</td>
+<td style="text-align:center">标识符</td>
+</tr>
+<tr>
+<td style="text-align:center">+</td>
+<td style="text-align:center">加号</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td style="text-align:center">数字</td>
+</tr>
+<tr>
+<td style="text-align:center">)</td>
+<td style="text-align:center">右圆括号</td>
+</tr>
+<tr>
+<td style="text-align:center">*</td>
+<td style="text-align:center">乘号</td>
+</tr>
+<tr>
+<td style="text-align:center">（</td>
+<td style="text-align:center">左圆括号</td>
+</tr>
+<tr>
+<td style="text-align:center">2</td>
+<td style="text-align:center">数字</td>
+</tr>
+<tr>
+<td style="text-align:center">+</td>
+<td style="text-align:center">加号</td>
+</tr>
+<tr>
+<td style="text-align:center">6</td>
+<td style="text-align:center">数字</td>
+</tr>
+<tr>
+<td style="text-align:center">)</td>
+<td style="text-align:center">右圆括号</td>
+</tr>
+</tbody>
+</table>
+<p>词法分析产生的一般可以分为：关键字、标识符、字面量（数字、字符串等）和特殊符号（+、=）。在设别记号的同事，扫描器也会将标识符存放到符号表、将数字、字符串常量存放到文字表，以备后面使用。</p>
+<h5 id="语法分析">语法分析</h5>
+<p>接下来是语法分析器对扫描器产生的记号进行语法分析，从而产生语法树（syntax tree）。简单的将语法分析就是以表达式（Expression）为节点的树。</p>
+<p><img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/Image00051.jpg?raw=true" alt=""></p>
+<p>在语法分析的同时，很多运算符号的优先级和含义也被确定下来了。比如乘法表达式的优先级比加法高，而圆括号表达式的优先级比乘法高，等等。另外有些符号具有多重含义，比如星号*在C语言中可以表示乘法表达式，也可以表示对指针取内容的表达式，所以语法分析阶段必须对这些内容进行区分。如果出现了表达式不合法，比如各种括号不匹配、表达式中缺少操作符等，编译器就会报告语法分析阶段的错误。</p>
+<h5 id="语义分析">语义分析</h5>
+<p>由语义分析器（Semantic Analyzer）来完成。语法分析仅仅是完成了对表达式的语法层面的分析，但是它并不了解这个语句是否真正有意义。比如C语言里面两个指针做乘法运算是没有意义的，但是这个语句在语法上是合法的；比如同样一个指针和一个浮点数做乘法运算是否合法等。编译器所能分析的语义是静态语义（Static Semantic），所谓静态语义是指在编译期可以确定的语义，与之对应的动态语义（Dynamic Semantic）就是只有在运行期才能确定的语义。上面描述的语法树在经过语义分析阶段以后成为如图:
+<img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/Image00097.jpg?raw=true" alt=""></p>
+<h5 id="中间语言生成">中间语言生成</h5>
+<p>现代的编译器有着很多层次的优化，往往在源代码级别会有一个优化过程。我们这里所描述的源码级优化器（Source Code Optimizer）在不同编译器中可能会有不同的定义或有一些其他的差异。源代码级优化器会在源代码级别进行优化，在上例中，细心的读者可能已经发现，（2 + 6）这个表达式可以被优化掉，因为它的值在编译期就可以被确定。类似的还有很多其他复杂的优化过程，我们在这里就不详细描述了。经过优化的语法树如图所示。</p>
+<p><img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/Image00020.jpg?raw=true" alt=""></p>
+<p>我们看到（2 + 6）这个表达式被优化成8。其实直接在语法树上作优化比较困难，所以源代码优化器往往将整个语法树转换成中间代码（Intermediate Code），它是语法树的顺序表示，其实它已经非常接近目标代码了。但和目标机器和运行时环境无关。</p>
+<p>中间代码有很多形式常见的有三地址码（Three-address Code）和P-代码（P-Code）。我们就拿最常见的三地址码来作为例子，最基本的三地址码是这样的:</p>
+<pre><code>x = y op z
+</code></pre><p>这个三地址码表示将变量y和z进行op操作以后，赋值给x。这里op操作可以是算数运算，比如加减乘除等，也可以是其他任何可以应用到y和z的操作。三地址码也得名于此，因为一个三地址码语句里面有三个变量地址。我们上面的例子中的语法树可以被翻译成三地址码后是这样的：</p>
+<pre><code>t1 = 2 + 6
+t2 = index + 4
+t3 = t2 * t1
+array[index] = t3
+</code></pre><p>优化程序会计算出t1=8，然后将后面的t1替换成8，因为t2可以重复利用，还可以省去一个临时变量t3，经过优化后的代码</p>
+<pre><code>t2 = index + 4
+t2 = t2 * 8
+array[index] = t2
+</code></pre><p>中间代码使得编译器可以被分为前端和后端。编译器前端负责产生机器无关的中间代码，编译器后端将中间代码转换成目标机器代码。这样对于一些可以跨平台的编译器而言，它们可以针对不同的平台使用同一个前端和针对不同机器平台的数个后端。</p>
+<h4 id="目标代码的生成及优化">目标代码的生成及优化</h4>
+<p>源代码级优化器产生中间代码标志着下面的过程都属于编辑器后端。编译器后端主要包括代码生成器（Code Generator）和目标代码优化器（Target Code Optimizer）。</p>
+<p>代码生成器将中间代码转换成目标机器代码，这个过程十分依赖于目标机器，因为不同的机器有着不同的字长、寄存器、整数数据类型和浮点数数据类型等。对于上面例子中的中间代码，代码生成器可能会生成下面的代码序列（我们用x86的汇编语言来表示，并且假设index的类型为int型，array的类型为int型数组）：</p>
+<pre><code>movl index, %ecx        ; value of index to ecx
+addl $4, %ecx           ; ecx = ecx + 4
+mull $8, %ecx             ; ecx = ecx * 8
+movl index, %eax        ; value of index to eax
+movl %ecx, array(,eax,4)  ; array[index] = ecx
+</code></pre><p>最后目标代码优化器对上述的目标代码进行优化，比如选择合适的寻址方式、使用位移来代替乘法运算、删除多余的指令等。上面的例子中，乘法由一条相对复杂的基址比例变址寻址（Base Index Scale Addressing）的lea指令完成，随后由一条mov指令完成最后的赋值操作，这条mov指令的寻址方式与lea是一样的。</p>
+<pre><code>movl  index, %edx
+leal  32(,%edx,8), %eax
+movl  %eax, array(,%edx,4)
+</code></pre><p>经过这些扫描、语法分析、语义分析、源代码优化、代码生成和目标代码优化，编译器忙活了这么多个步骤以后，源代码终于被编译成了目标代码。但是这个目标代码中有一个问题是：index和array的地址还没有确定。如果我们要把目标代码使用汇编器编译成真正能够在机器上执行的指令，那么index和array的地址应该从哪儿得到呢？如果index和array定义在跟上面的源代码同一个编译单元里面，那么编译器可以为index和array分配空间，确定它们的地址；那如果是定义在其他的程序模块呢？</p>
+<p>定义其他模块的全局变量和函数在最终运行时的绝对地址都要在最终链接的时候才能确定。所以现代的编译器可以将一个源代码文件编译成一个未链接的目标文件，然后由链接器最终将这些目标文件链接起来形成可执行文件。让我们带着这个问题，走进链接的世界。</p>
+<h3 id="链接器">链接器</h3>
+<p>在现代软件开发过程中，软件的规模往往都很大，动辄数百万行代码，如果都放在一个模块肯定无法想象。所以现代的大型软件往往拥有成千上万个模块，这些模块之间相互依赖又相对独立。这种按照层次化及模块化存储和组织源代码有很多好处，比如代码更容易阅读、理解、重用，每个模块可以单独开发、编译、测试，改变部分代码不需要编译整个程序等。</p>
+<p>分割成多个模块之后，模块之间的如何组合的问题就是我们链接所着重解决的问题。最常见的属于静态语言的C/C++模块之间通信有两种方式，一种是模块间的函数调用，另外一种是模块间的变量访问。函数访问须知道目标函数的地址，变量访问也须知道目标变量的地址，所以这两种方式都可以归结为一种方式，那就是模块间符号的引用。</p>
+<h4 id="模块的拼装静态链接">模块的拼装——静态链接</h4>
+<p>程序设计的模块化是人们一直在追求的目标，因为当一个系统十分复杂的时候，我们不得不将一个复杂的系统逐步分割成小的系统以达到各个突破的目的。一个复杂的软件也如此，人们把每个源代码模块独立地编译，然后按照需要将它们“组装”起来，这个组装模块的过程就是链接（Linking）。</p>
+<p>链接过程主要包括了地址和空间分配（Address and Storage Allocation）、符号决议（Symbol Resolution）和重定位（Relocation）等这些步骤。</p>
+<p>符号决议有时候也被叫做符号绑定（Symbol Binding）、名称绑定（Name Binding）、名称决议（Name Resolution），甚至还有叫做地址绑定（Address Binding）、指令绑定（Instruction Binding）。</p>
+<p>大体上它们的意思都一样，但从细节角度来区分，它们之间还是存在一定区别的，比如“决议”更倾向于静态链接，而“绑定”更倾向于动态链接，即它们所使用的范围不一样。在静态链接，我们将统一称为符号决议。</p>
+<p>我们在程序模块main.c中使用另外一个模块func.c中的函数foo()。我们在main.c模块中每一处调用foo的时候都必须确切知道foo这个函数的地址，但是由于每个模块都是单独编译的，在编译器编译main.c的时候它并不知道foo函数的地址，所以它暂时把这些调用foo的指令的目标地址搁置，等待最后链接的时候由链接器去将这些指令的目标地址修正。如果没有链接器，须要我们手工把每个调用foo的指令进行修正，则填入正确的foo函数地址。当func.c模块被重新编译，foo函数的地址有可能改变时，那么我们在main.c中所有使用到foo的地址的指令将要全部重新调整。这些繁琐的工作将成为程序员的噩梦。使用链接器，你可以直接引用其他模块的函数和全局变量而无须知道它们的地址，因为链接器在链接的时候，会根据你所引用的符号 foo，自动去相应的func.c模块查找foo的地址，然后将main.c模块中所有引用到foo的指令重新修正，让它们的目标地址为真正的foo函数的地址。这就是静态链接的最基本的过程和作用。</p>
+<p><img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/Image00146.jpg?raw=true" alt=""></p>
+<p>以上是一个最基本的静态链接过程，每个模块的源代码文件（如.c）文件经过编译器编译成目标文件（Object File，一般扩展名为.o或.obj），目标文件和库（Library）一起链接.</p>
+
+    </div>
+    <footer>
+      <div class="stats">
+  
+    <ul class="categories">
+      
+        
+          <li><a class="article-terms-link" href="https://techchao.com/categories/%e7%bc%96%e8%af%91/">编译</a></li>
+        
+      
+    </ul>
+  
+  
+    <ul class="tags">
+      <li>None</li>
+    </ul>
+  
+</div>
+
+    </footer>
+  </article>
+  
+    
+  <article class="post">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "techchao.com" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </article>
+
+
+
+
+  
+  <div class="pagination">
+    
+      <a href="https://techchao.com/blog/link_load3/" class="button left"><span>读《程序员的自我修养-链接、装载与库》—— 目标文件结构</span></a>
+    
+    
+      <a href="https://techchao.com/blog/link_load/" class="button right"><span>读《程序员的自我修养-链接、装载与库》—— 基础知识</span></a>
+    
+  </div>
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>最新文章</h1>
+      </header>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/link_load3/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602066698275-3025cd12e809?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=967&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1602066698275-3025cd12e809?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=967&amp;q=80" alt="">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/link_load3/">读《程序员的自我修养-链接、装载与库》—— 目标文件结构</a></h2>
+          <time class="published" datetime="2020-11-03 15:38:44 &#43;0800 CST">November 3, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/link_load2/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1587321174565-73cffc72e10a?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1949&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1587321174565-73cffc72e10a?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1949&amp;q=80" alt="">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/link_load2/">读《程序员的自我修养-链接、装载与库》—— 编译和链接</a></h2>
+          <time class="published" datetime="2020-11-02 16:03:45 &#43;0800 CST">November 2, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/link_load/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1601173662818-95e6e19c4c50?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2090&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1601173662818-95e6e19c4c50?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2090&amp;q=80" alt="">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/link_load/">读《程序员的自我修养-链接、装载与库》—— 基础知识</a></h2>
+          <time class="published" datetime="2020-10-29 18:56:18 &#43;0800 CST">October 29, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/flutter_animation_explict/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1602808180309-2e0c62986635?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1319&amp;q=80" alt="Mountain Range Through Clouds">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/flutter_animation_explict/">【译】Flutter动画系列——显示动画</a></h2>
+          <time class="published" datetime="2020-10-21 10:50:11 &#43;0800 CST">October 21, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/flutter_animation_implict/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1599884441892-07f8de71a0f8?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1267&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1599884441892-07f8de71a0f8?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1267&amp;q=80" alt="Unsplash Sun Raise">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/flutter_animation_implict/">【译】Flutter动画系列——隐式动画</a></h2>
+          <time class="published" datetime="2020-10-21 10:41:29 &#43;0800 CST">October 21, 2020</time>
+        </header>
+      </article>
+      
+      
+        <footer>
+          <a href="https://techchao.com/blog/" class="button">查看更多</a>
+        </footer>
+      
+    </section>
+  
+
+  
+    
+
+      <section id="categories">
+        <header>
+          <h1><a href="https://techchao.com/categories">分类</a></h1>
+        </header>
+        <ul>
+          
+          
+          <li>
+              <a href="https://techchao.com/categories/flutter/">flutter<span class="count">3</span></a>
+          
+          <li>
+              <a href="https://techchao.com/categories/%E7%BC%96%E8%AF%91/">编译<span class="count">3</span></a>
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>关于</h1>
+      </header>
+      <p>一个会点 Flutter 的 iOSer</p>
+      <footer>
+        <a href="https://techchao.com/about" class="button">查看更多</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+  
+  <p class="copyright">
+    © 2020 TechChao
+      <br>
+    主题: <a href='https://themes.gohugo.io/hugo-future-imperfect-slim/' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br> | 由 <a href='https://gohugo.io/' target='_blank' rel='noopener' title='0.75.0'>Hugo</a> 驱动
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="https://techchao.com/js/highlight.js"></script>
+    
+    <script>hljs.initHighlightingOnLoad();</script><script src="https://techchao.com/js/bundle.min.b4776136bf9d934e52e6ed871e063596bd248370eb3345ec4d49a884121c2161.js" integrity="sha256-tHdhNr&#43;dk05S5u2HHgY1lr0kg3DrM0XsTUmohBIcIWE="></script>
+    <script src="https://techchao.com/js/add-on.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', '180959623', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    </div>
+  </body>
+</html>
