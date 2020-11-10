@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>技术 on TechChao</title>
+    <link>https://techchao.com/tags/%E6%8A%80%E6%9C%AF/</link>
+    <description>Recent content in 技术 on TechChao</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 10 Nov 2020 10:32:56 +0800</lastBuildDate><atom:link href="https://techchao.com/tags/%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>一文帮你看懂 iOS block 底层原理</title>
+      <link>https://techchao.com/blog/ios_block/</link>
+      <pubDate>Tue, 10 Nov 2020 10:32:56 +0800</pubDate>
+      
+      <guid>https://techchao.com/blog/ios_block/</guid>
+      <description>面试中常见考题：
+  block的原理是怎样的？本质是什么？  答：Block 的本质是一个封装了函数及其调用环境的 Objective-C 对象。原理详细见「Block 使用及结构」
+ block的属性修饰词为什么是copy？使用block有哪些使用注意？  答： MRC 下 block 如果没有 copy 到堆上,值捕获不会对外部变量引用。 虽然 ARC 环境 strong 也可以修饰 Block，那是因为编译器会对 strong 修饰的 block 也会进行一次 copy 操作。为什么用 copy 修饰算是历史习惯问题，推荐不管 ARC、MRC 使用 copy 修饰 。使用注意：循环引用问题
+ __block的作用是什么？有什么使用注意点？  答：__block可以用于解决 block 内部无法修改auto变量值，__block不能也没必要修饰全局变量、静态变量（static）详见下文。
+ 使用 block 的注意事项?如何解决循环引用?  答： block 使用主要关注内存是否泄漏，block 容易造成循环引用，解决循环引用主要有两种：
+ 使用 __weak（推荐）、__unsafe_retained(不推荐)修饰被 block 的捕获的变量。 在block执行的代码块中，将捕获的变量重置为 nil，缺点是必须执行完 block 块才会解决循环引用。   Tip:本文以下代码均为 ARC 环境，除非特别注明 MRC。
+Block 使用及结构 来看一段简单的 Block 的代码：</description>
+    </item>
+    
+  </channel>
+</rss>

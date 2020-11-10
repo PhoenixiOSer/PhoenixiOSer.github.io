@@ -4,12 +4,12 @@
   
   <url>
     <loc>https://techchao.com/blog/</loc>
-    <lastmod>2020-11-03T15:38:44+08:00</lastmod>
+    <lastmod>2020-11-10T10:32:56+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://techchao.com/categories/</loc>
-    <lastmod>2020-11-03T15:38:44+08:00</lastmod>
+    <lastmod>2020-11-10T10:32:56+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -23,8 +23,28 @@
   </url>
   
   <url>
+    <loc>https://techchao.com/categories/ios/</loc>
+    <lastmod>2020-11-10T10:32:56+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://techchao.com/tags/</loc>
+    <lastmod>2020-11-10T10:32:56+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://techchao.com/en/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-cn"
+                href="https://techchao.com/tags/"
+                />
+  </url>
+  
+  <url>
     <loc>https://techchao.com/</loc>
-    <lastmod>2020-11-03T15:38:44+08:00</lastmod>
+    <lastmod>2020-11-10T10:32:56+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -35,6 +55,16 @@
                 hreflang="zh-cn"
                 href="https://techchao.com/"
                 />
+  </url>
+  
+  <url>
+    <loc>https://techchao.com/blog/ios_block/</loc>
+    <lastmod>2020-11-10T10:32:56+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://techchao.com/tags/%E6%8A%80%E6%9C%AF/</loc>
+    <lastmod>2020-11-10T10:32:56+08:00</lastmod>
   </url>
   
   <url>
@@ -80,20 +110,6 @@
   <url>
     <loc>https://techchao.com/about/</loc>
     <lastmod>2020-10-19T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://techchao.com/tags/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://techchao.com/en/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="https://techchao.com/tags/"
-                />
   </url>
   
 </urlset>
