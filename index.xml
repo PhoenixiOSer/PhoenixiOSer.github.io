@@ -6,7 +6,27 @@
     <description>Recent content on TechChao</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 10 Nov 2020 10:32:56 +0800</lastBuildDate><atom:link href="https://techchao.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 11 Nov 2020 15:37:32 +0800</lastBuildDate><atom:link href="https://techchao.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>读《程序员的自我修养-链接、装载与库》—— 静态链接</title>
+      <link>https://techchao.com/blog/link_load4/</link>
+      <pubDate>Wed, 11 Nov 2020 15:37:32 +0800</pubDate>
+      
+      <guid>https://techchao.com/blog/link_load4/</guid>
+      <description>在了解完ELF目标文件格式后，我们需要知道当存在两个目标文件的时候，如何将它们链接起来形成一个可执行文件？这个过程中发生了什么？
+我们将使用下面这两个源代码文件a.c和b.c作为例子展开分析：
+/*a.c*/ extern int shared; int main(){ int a = 100; swap(&amp;amp;a,&amp;amp;shared); } /*b.c*/ int shared = 1; void swap(int *a, int *b){ *a ^= *b ^= *a ^= *b; } 首先我们使用gcc -c a.c b.c将a和b编译生成目标文件 a.o 和 b.o:经过编译以后我们就得到了a.o和b.o这两个目标文件。从代码中可以看到，b.c总共定义了两个全局符号，一个是变量shared，另外一个是函数swap；a.c里面定义了一个全局符号就是main。模块a.c里面引用到了b.c里面的swap和shared。我们接下来要做的就是把a.o和b.o这两个目标文件链接在一起并最终形成一个可执行文件ab。
+空间与地址分配 链接器为目标文件分配地址和空间。明确表示链接器的任务在于分配地址和空间。链接的过程就是将多个输入的目标文件加工合并一个输出文件。在例子中，我们输入的是a.o 和 b.o,输出的是ab。
+前文我们了解过每个目标文件都包含代码段和数据段。那么在输出文件中目标文件的各个段是如何分布的呢?
+按序叠加 最简单的方法就是按照每个目标文件的顺序依次叠加,这种方法实现简单，但是有致命的缺点就是在多输入文件的情况下，输出文件将会有成百上千的零散段。而且每个段都有地址和空间对齐的要求也会造成内存空间存在大量的内部碎片。
+相似端合并 一个更实际的方法是将相同性质的段合并到一起，比如将所有输入文件的.text合并到输出文件的.text段，接着是.data段、.bss段等
+现在的链接器空间分配的策略基本上都采用这种方法，使用这种方法的链接器一般都采用一种叫两步链接（Two-pass Linking）。
+第一步 空间与地址分配 扫描所有的输入目标文件，并且获得它们的各个段的长度、属性和位置，并且将输入目标文件中的符号表中所有的符号定义和符号引用收集起来，统一放到一个全局符号表。这一步中，链接器将能够获得所有输入目标文件的段长度，并且将它们合并，计算出输出文件中各个段合并后的长度与位置，并建立映射关系。
+第二步 符号解析与重定位 使用上面第一步中收集到的所有信息，读取输入文件中段的数据、重定位信息，并且进行符号解析与重定位、调整代码中的地址等。事实上第二步是链接过程的核心，特别是重定位过程。
+我们先用 ld 将 a.o 和 b.o链接起来。
+ld a.o b.o -e main -o ab -macosx_version_min 10.</description>
+    </item>
+    
     <item>
       <title>一文帮你看懂 iOS block 底层原理</title>
       <link>https://techchao.com/blog/ios_block/</link>

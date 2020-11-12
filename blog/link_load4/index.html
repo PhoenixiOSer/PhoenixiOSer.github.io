@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="zh-cn">
+  <head>
+  <meta charset="utf-8">
+<title>读《程序员的自我修养-链接、装载与库》—— 静态链接 - TechChao</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="generator" content="Hugo 0.75.0" /><meta itemprop="name" content="读《程序员的自我修养-链接、装载与库》—— 静态链接">
+<meta itemprop="description" content="在了解完ELF目标文件格式后，我们需要知道当存在两个目标文件的时候，如何将它们链接起来形成一个可执行文件？这个过程中发生了什么？
+我们将使用下面这两个源代码文件a.c和b.c作为例子展开分析：
+/*a.c*/ extern int shared; int main(){ int a = 100; swap(&amp;a,&amp;shared); } /*b.c*/ int shared = 1; void swap(int *a, int *b){ *a ^= *b ^= *a ^= *b; } 首先我们使用gcc -c a.c b.c将a和b编译生成目标文件 a.o 和 b.o:经过编译以后我们就得到了a.o和b.o这两个目标文件。从代码中可以看到，b.c总共定义了两个全局符号，一个是变量shared，另外一个是函数swap；a.c里面定义了一个全局符号就是main。模块a.c里面引用到了b.c里面的swap和shared。我们接下来要做的就是把a.o和b.o这两个目标文件链接在一起并最终形成一个可执行文件ab。
+空间与地址分配 链接器为目标文件分配地址和空间。明确表示链接器的任务在于分配地址和空间。链接的过程就是将多个输入的目标文件加工合并一个输出文件。在例子中，我们输入的是a.o 和 b.o,输出的是ab。
+前文我们了解过每个目标文件都包含代码段和数据段。那么在输出文件中目标文件的各个段是如何分布的呢?
+按序叠加 最简单的方法就是按照每个目标文件的顺序依次叠加,这种方法实现简单，但是有致命的缺点就是在多输入文件的情况下，输出文件将会有成百上千的零散段。而且每个段都有地址和空间对齐的要求也会造成内存空间存在大量的内部碎片。
+相似端合并 一个更实际的方法是将相同性质的段合并到一起，比如将所有输入文件的.text合并到输出文件的.text段，接着是.data段、.bss段等
+现在的链接器空间分配的策略基本上都采用这种方法，使用这种方法的链接器一般都采用一种叫两步链接（Two-pass Linking）。
+第一步 空间与地址分配 扫描所有的输入目标文件，并且获得它们的各个段的长度、属性和位置，并且将输入目标文件中的符号表中所有的符号定义和符号引用收集起来，统一放到一个全局符号表。这一步中，链接器将能够获得所有输入目标文件的段长度，并且将它们合并，计算出输出文件中各个段合并后的长度与位置，并建立映射关系。
+第二步 符号解析与重定位 使用上面第一步中收集到的所有信息，读取输入文件中段的数据、重定位信息，并且进行符号解析与重定位、调整代码中的地址等。事实上第二步是链接过程的核心，特别是重定位过程。
+我们先用 ld 将 a.o 和 b.o链接起来。
+ld a.o b.o -e main -o ab -macosx_version_min 10.">
+<meta itemprop="datePublished" content="2020-11-11T15:37:32+08:00" />
+<meta itemprop="dateModified" content="2020-11-11T15:37:32+08:00" />
+<meta itemprop="wordCount" content="426">
+<meta itemprop="image" content="">
+
+
+
+<meta itemprop="keywords" content="技术," />
+<meta property="og:title" content="读《程序员的自我修养-链接、装载与库》—— 静态链接" />
+<meta property="og:description" content="在了解完ELF目标文件格式后，我们需要知道当存在两个目标文件的时候，如何将它们链接起来形成一个可执行文件？这个过程中发生了什么？
+我们将使用下面这两个源代码文件a.c和b.c作为例子展开分析：
+/*a.c*/ extern int shared; int main(){ int a = 100; swap(&amp;a,&amp;shared); } /*b.c*/ int shared = 1; void swap(int *a, int *b){ *a ^= *b ^= *a ^= *b; } 首先我们使用gcc -c a.c b.c将a和b编译生成目标文件 a.o 和 b.o:经过编译以后我们就得到了a.o和b.o这两个目标文件。从代码中可以看到，b.c总共定义了两个全局符号，一个是变量shared，另外一个是函数swap；a.c里面定义了一个全局符号就是main。模块a.c里面引用到了b.c里面的swap和shared。我们接下来要做的就是把a.o和b.o这两个目标文件链接在一起并最终形成一个可执行文件ab。
+空间与地址分配 链接器为目标文件分配地址和空间。明确表示链接器的任务在于分配地址和空间。链接的过程就是将多个输入的目标文件加工合并一个输出文件。在例子中，我们输入的是a.o 和 b.o,输出的是ab。
+前文我们了解过每个目标文件都包含代码段和数据段。那么在输出文件中目标文件的各个段是如何分布的呢?
+按序叠加 最简单的方法就是按照每个目标文件的顺序依次叠加,这种方法实现简单，但是有致命的缺点就是在多输入文件的情况下，输出文件将会有成百上千的零散段。而且每个段都有地址和空间对齐的要求也会造成内存空间存在大量的内部碎片。
+相似端合并 一个更实际的方法是将相同性质的段合并到一起，比如将所有输入文件的.text合并到输出文件的.text段，接着是.data段、.bss段等
+现在的链接器空间分配的策略基本上都采用这种方法，使用这种方法的链接器一般都采用一种叫两步链接（Two-pass Linking）。
+第一步 空间与地址分配 扫描所有的输入目标文件，并且获得它们的各个段的长度、属性和位置，并且将输入目标文件中的符号表中所有的符号定义和符号引用收集起来，统一放到一个全局符号表。这一步中，链接器将能够获得所有输入目标文件的段长度，并且将它们合并，计算出输出文件中各个段合并后的长度与位置，并建立映射关系。
+第二步 符号解析与重定位 使用上面第一步中收集到的所有信息，读取输入文件中段的数据、重定位信息，并且进行符号解析与重定位、调整代码中的地址等。事实上第二步是链接过程的核心，特别是重定位过程。
+我们先用 ld 将 a.o 和 b.o链接起来。
+ld a.o b.o -e main -o ab -macosx_version_min 10." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://techchao.com/blog/link_load4/" />
+<meta property="og:image" content="" />
+<meta property="article:published_time" content="2020-11-11T15:37:32+08:00" />
+<meta property="article:modified_time" content="2020-11-11T15:37:32+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content=""/>
+
+<meta name="twitter:title" content="读《程序员的自我修养-链接、装载与库》—— 静态链接"/>
+<meta name="twitter:description" content="在了解完ELF目标文件格式后，我们需要知道当存在两个目标文件的时候，如何将它们链接起来形成一个可执行文件？这个过程中发生了什么？
+我们将使用下面这两个源代码文件a.c和b.c作为例子展开分析：
+/*a.c*/ extern int shared; int main(){ int a = 100; swap(&amp;a,&amp;shared); } /*b.c*/ int shared = 1; void swap(int *a, int *b){ *a ^= *b ^= *a ^= *b; } 首先我们使用gcc -c a.c b.c将a和b编译生成目标文件 a.o 和 b.o:经过编译以后我们就得到了a.o和b.o这两个目标文件。从代码中可以看到，b.c总共定义了两个全局符号，一个是变量shared，另外一个是函数swap；a.c里面定义了一个全局符号就是main。模块a.c里面引用到了b.c里面的swap和shared。我们接下来要做的就是把a.o和b.o这两个目标文件链接在一起并最终形成一个可执行文件ab。
+空间与地址分配 链接器为目标文件分配地址和空间。明确表示链接器的任务在于分配地址和空间。链接的过程就是将多个输入的目标文件加工合并一个输出文件。在例子中，我们输入的是a.o 和 b.o,输出的是ab。
+前文我们了解过每个目标文件都包含代码段和数据段。那么在输出文件中目标文件的各个段是如何分布的呢?
+按序叠加 最简单的方法就是按照每个目标文件的顺序依次叠加,这种方法实现简单，但是有致命的缺点就是在多输入文件的情况下，输出文件将会有成百上千的零散段。而且每个段都有地址和空间对齐的要求也会造成内存空间存在大量的内部碎片。
+相似端合并 一个更实际的方法是将相同性质的段合并到一起，比如将所有输入文件的.text合并到输出文件的.text段，接着是.data段、.bss段等
+现在的链接器空间分配的策略基本上都采用这种方法，使用这种方法的链接器一般都采用一种叫两步链接（Two-pass Linking）。
+第一步 空间与地址分配 扫描所有的输入目标文件，并且获得它们的各个段的长度、属性和位置，并且将输入目标文件中的符号表中所有的符号定义和符号引用收集起来，统一放到一个全局符号表。这一步中，链接器将能够获得所有输入目标文件的段长度，并且将它们合并，计算出输出文件中各个段合并后的长度与位置，并建立映射关系。
+第二步 符号解析与重定位 使用上面第一步中收集到的所有信息，读取输入文件中段的数据、重定位信息，并且进行符号解析与重定位、调整代码中的地址等。事实上第二步是链接过程的核心，特别是重定位过程。
+我们先用 ld 将 a.o 和 b.o链接起来。
+ld a.o b.o -e main -o ab -macosx_version_min 10."/>
+<link rel="stylesheet" href="https://techchao.com/css/bundle.min.ef567f57b0a317f77af9c245e86ebb69ffe1efd720341032112204c93f4af256.css" integrity="sha256-71Z/V7CjF/d6&#43;cJF6G67af/h79cgNBAyESIEyT9K8lY="><link rel="stylesheet" href="https://techchao.com/css/add-on.css">
+</head>
+
+  <body>
+    
+
+<header id="site-header">
+  <nav id="site-nav">
+    <h1 class="nav-title">
+      <a href="https://techchao.com/" class="nav">
+        
+          博客
+        
+      </a>
+    </h1>
+    <menu id="site-nav-menu" class="flyout-menu menu">
+      
+        
+          
+          <a href="https://techchao.com/" class="nav link"><i class='fas fa-home'></i> 首页</a>
+        
+      
+        
+          
+          <a href="https://techchao.com/categories/" class="nav link"><i class='fas fa-sitemap'></i> 分类</a>
+        
+      
+        
+          
+          <a href="https://techchao.com/blog/" class="nav link"><i class='far fa-newspaper'></i> Blog</a>
+        
+      
+        
+          
+          <a href="https://techchao.com/about/" class="nav link"><i class='far fa-id-card'></i> 关于</a>
+        
+      
+      
+      
+    </menu>
+    
+    
+    
+    <a href="#site-nav" class="nav nav-toggle"><i class="fas fa-bars fa-2x"></i></a>
+  </nav>
+  
+  
+  
+</header>
+
+    <div id="wrapper">
+      <section id="site-intro" >
+  <a href="https://techchao.com/"><img src="https://techchao.com/img/main/logo.jpg" class="circle" width="100" alt="TechChao" /></a>
+  <header>
+    <h1>TechChao</h1>
+  </header>
+  <main>
+    <p>一个平凡程序员写写东西的地方</p>
+  </main>
+  
+    <footer>
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+    </footer>
+  
+</section>
+
+      <main id="site-main">
+        
+  <article class="post">
+    <header>
+  <div class="title">
+    
+      <h2><a href="https://techchao.com/blog/link_load4/">读《程序员的自我修养-链接、装载与库》—— 静态链接</a></h2>
+    
+    
+  </div>
+  <div class="meta">
+    <time datetime="2020-11-11 15:37:32 &#43;0800 CST">November 11, 2020</time>
+    <p>TechChao</p>
+    <p>2 分钟</p>
+  </div>
+</header>
+
+    <div class="content">
+      <a href="https://techchao.com/blog/link_load4/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1601280398327-586180e5a652?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2134&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1601280398327-586180e5a652?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2134&amp;q=80" alt="">
+  </a>
+      <p>在了解完ELF目标文件格式后，我们需要知道当存在两个目标文件的时候，如何将它们链接起来形成一个可执行文件？这个过程中发生了什么？</p>
+<p>我们将使用下面这两个源代码文件<code>a.c</code>和<code>b.c</code>作为例子展开分析：</p>
+<!-- more -->
+<pre><code>/*a.c*/
+extern int shared;
+int main(){
+    int a = 100;
+    swap(&amp;a,&amp;shared);
+}
+
+/*b.c*/
+int shared = 1;
+
+void swap(int *a, int *b){
+    *a ^= *b ^= *a ^= *b;
+}
+</code></pre><p>首先我们使用<code>gcc -c a.c b.c</code>将a和b编译生成目标文件 <code>a.o</code> 和 <code>b.o</code>:经过编译以后我们就得到了<code>a.o</code>和<code>b.o</code>这两个目标文件。从代码中可以看到，<code>b.c</code>总共定义了两个全局符号，一个是变量<code>shared</code>，另外一个是函数<code>swap</code>；<code>a.c</code>里面定义了一个全局符号就是<code>main</code>。模块<code>a.c</code>里面引用到了<code>b.c</code>里面的<code>swap</code>和<code>shared</code>。我们接下来要做的就是把<code>a.o</code>和<code>b.o</code>这两个目标文件链接在一起并最终形成一个可执行文件<code>ab</code>。</p>
+<h2 id="空间与地址分配">空间与地址分配</h2>
+<p><code>链接器为目标文件分配地址和空间</code>。明确表示链接器的任务在于分配地址和空间。链接的过程就是将多个输入的目标文件加工合并一个输出文件。在例子中，我们输入的是<code>a.o</code> 和 <code>b.o</code>,输出的是<code>ab</code>。</p>
+<p>前文我们了解过每个目标文件都包含代码段和数据段。那么在输出文件中目标文件的各个段是如何分布的呢?</p>
+<h3 id="按序叠加">按序叠加</h3>
+<p>最简单的方法就是按照每个目标文件的顺序依次叠加,这种方法实现简单，但是有致命的缺点就是在多输入文件的情况下，输出文件将会有成百上千的零散段。而且每个段都有地址和空间对齐的要求也会造成内存空间存在大量的内部碎片。</p>
+<p><img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/link_load4/Image00118.jpg?raw=true" alt=""></p>
+<h3 id="相似端合并">相似端合并</h3>
+<p>一个更实际的方法是将相同性质的段合并到一起，比如将所有输入文件的<code>.text</code>合并到输出文件的<code>.text</code>段，接着是<code>.data</code>段、<code>.bss</code>段等</p>
+<p><img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/link_load4/Image00041.jpg?raw=true" alt=""></p>
+<p>现在的链接器空间分配的策略基本上都采用这种方法，使用这种方法的链接器一般都采用一种叫两步链接（Two-pass Linking）。</p>
+<p>第一步 空间与地址分配 扫描所有的输入目标文件，并且获得它们的各个段的长度、属性和位置，并且将输入目标文件中的符号表中所有的符号定义和符号引用收集起来，统一放到一个全局符号表。这一步中，链接器将能够获得所有输入目标文件的段长度，并且将它们合并，计算出输出文件中各个段合并后的长度与位置，并建立映射关系。</p>
+<p>第二步 符号解析与重定位 使用上面第一步中收集到的所有信息，读取输入文件中段的数据、重定位信息，并且进行符号解析与重定位、调整代码中的地址等。事实上第二步是链接过程的核心，特别是重定位过程。</p>
+<p>我们先用 <code>ld</code> 将 <code>a.o</code> 和 <code>b.o</code>链接起来。</p>
+<p><code>ld a.o b.o -e main  -o  ab -macosx_version_min 10.13 -lSystem</code>(在mac上链接执行<code>ld a.o b.o -e _main -o ab</code>无法通过)。</p>
+<p>注意<code>-e main </code>表示将main函数作为程序入口，ld链接器默认的程序入口为<code>_start</code>。输出<code>ab</code>文件。</p>
+<p>接下来我们通过 <code>objcdump</code> 来查看下各段的属性（作者的开发环境为MacOS和原作者的输出可能有些出入）：
+<img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/link_load4/Image00042.png?raw=true" alt="">。</p>
+<p>可执行文件<code>ab</code>中的各个段都被分配到了相应的虚拟地址。这里的输出程序<code>ab</code>中，<code>.text</code>段被分配到了地址0x100000f50，大小为0x5c字节；.data`段从地址0x100001000开始，大小为0x48字节。整个链接过程前后，目标文件各段的分配、程序虚拟地址如图(借鉴书中图片与实际有出入)：</p>
+<p><img src="https://github.com/PhoenixiOSer/iOSLearning/blob/master/Assets/link_load_lib/link_load4/Image00087.jpg?raw=true" alt="">。</p>
+<p>ab中各段是通过合并输入文件中各段所得到的。所以ab中肯定包含了 main 函数和 swap 函数的指令代码。前文中ab各段分配的地址和操作系统的进程虚拟地址空间分配规则有关。这里暂不深入。</p>
+<h3 id="符号地址的确定">符号地址的确定</h3>
+<p>链接器的第一步扫描和空间分配阶段，链接器按照前面介绍的空间分配方法进行分配。 在链接器第一步完成后，各段的虚拟地址就已经确定了。比如 ab 文件中的 &lsquo;.text&rsquo; 段的起始地址 0x100000f50，'.data' 段的起始地址值为 0x100001000。</p>
+<p>完成第一步之后就要进行符号解析和重定位了。因为符号在段内的相对位置是固定的。所以我们通过起始位置和偏移量也可以算出它们正确的虚拟地址，也是固定的。比如在 <code>a.o</code>中的 <code>main</code>相对于<code>.text</code>段的偏移是X，但是经过链接合并以后，<code>a.o</code>的<code>.text</code>段位于虚拟地址0x08048094，那么<code>main</code>的地址应该是0x100000f50 + X。各个符号通过一样的计算方式就可以得到最终的地址。</p>
+<h2 id="符号解析和重定位">符号解析和重定位</h2>
+<h3 id="重定位">重定位</h3>
+<p>在完成空间和地址的分配步骤以后，链接器就进入了符号解析与重定位的步骤。在分析符号解析和重定位之前，首先让我们来看看“a.o”里面是怎么使用这两个外部符号的，也就是说我们在“a.c”的源程序里面使用了“shared”变量和“swap”函数，那么编译器在将“a.c”编译成指令时，它如何访问“shared”变量？如何调用“swap”函数？</p>
+<p>使用 <code>objdump -d a.o</code> 命令查看 <code>a.o</code>的反汇编代码：</p>
+<pre><code>$objdump -d a.o
+a.o:     file format elf32-i386
+Disassembly of section .text:
+00000000 &lt;main&gt;:
+   0: 8d 4c 24 04           lea 0x4(%esp),%ecx
+   4: 83 e4 f0              and    $0xfffffff0,%esp
+   7: ff 71 fc              pushl  0xfffffffc(%ecx)
+   a: 55                    push   %ebp
+   b: 89 e5                 mov    %esp,%ebp
+   d: 51                    push   %ecx
+   e: 83 ec 24              sub    $0x24,%esp
+  11: c7 45 f8 64 00 00 00  movl   $0x64,0xfffffff8(%ebp)
+  18: c7 44 24 04 00 00 00  movl   $0x0,0x4(%esp)
+  1f: 00 
+  20: 8d 45 f8              lea 0xfffffff8(%ebp),%eax
+  23: 89 04 24              mov    %eax,(%esp)
+  26: e8 fc ff ff ff        call   27 &lt;main+0x27&gt;
+  2b: 83 c4 24              add    $0x24,%esp
+  2e: 59                    pop    %ecx
+  2f: 5d                    pop    %ebp
+  30: 8d 61 fc              lea 0xfffffffc(%ecx),%esp
+  33: c3                    ret  
+</code></pre><p>可以看到在 <code>a.o</code>反汇编结果中。<code>a.o</code>共定义了一个函数<code>main</code>。这个函数占用0x33个字节，总共有14条指令。</p>
+<p>在未进行空间分配之前，目标文件代码段中的起始地址以0x00000000开始，等到空间分配完成以后，各个函数才会确定自己在虚拟地址空间中的位置。在源代码“a.c”在被编译成目标文件时，编译器并不知道“shared”和“swap”的地址，因为它们定义在其他目标文件中。所以编译器就暂时把地址0看作是“shared”的地址，我们可以看到这条“movl”指令中，关于“shared”的地址部分为“0x00000000”。</p>
+<p>另一条0x26指令中 oxe8是操作码，是一条近址调用指令。后面4个字节是被调用函数相对于下一条指令的偏移量。相对偏移被置为0xFFFFFFFC（小端），它是常量“?-4”的补码形式。后面紧跟call指令的地址为 0x2b 。所以指令的偏移的计算 0x2b - 0x4 = 0x27.所以这条指令 call 的调用实际地址为 0x27。但是我们可以看到并没有看到存放swap函数地址的0x27，是因为在链接之前这些地址都是件临时的假地址。只有链接之后地址才有真正的意义。</p>
+<p>经过链接后的 ab 文件反汇编：</p>
+<pre><code>“$objdump –d ab
+ab:     file format elf32-i386
+Disassembly of section .text:
+08048094 &lt;main&gt;:
+ 8048094: 8d 4c 24 04           lea 0x4(%esp),%ecx
+ 8048098: 83 e4 f0              and    $0xfffffff0,%esp
+ 804809b: ff 71 fc              pushl  0xfffffffc(%ecx)
+ 804809e: 55                    push   %ebp
+ 804809f: 89 e5                 mov    %esp,%ebp
+ 80480a1: 51                    push   %ecx
+ 80480a2: 83 ec 24              sub    $0x24,%esp
+ 80480a5: c7 45 f8 64 00 00 00  movl   $0x64,0xfffffff8(%ebp)
+ 80480ac: c7 44 24 04 08 91 04  movl   $0x8049108,0x4(%esp)
+ 80480b3: 08 
+ 80480b4: 8d 45 f8              lea 0xfffffff8(%ebp),%eax
+ 80480b7: 89 04 24              mov    %eax,(%esp)
+ 80480ba: e8 09 00 00 00        call   80480c8 &lt;swap&gt;
+ 80480bf: 83 c4 24              add    $0x24,%esp
+ 80480c2: 59                    pop    %ecx
+ 80480c3: 5d                    pop    %ebp
+ 80480c4: 8d 61 fc              lea 0xfffffffc(%ecx),%esp
+ 80480c7: c3                    ret    
+080480c8 &lt;swap&gt;:
+ 80480c8: 55                    push   %ebp
+ ...
+</code></pre><p>经过修正以后，“shared”和“swap”的地址分别为0x08049108和0x00000009（小端字节序）。关于“shared”很好理解，因为“shared”变量的地址的确是0x08049108。对于“swap”来说稍显晦涩。我们前面介绍过，这个“call”指令是一条近址相对位移调用指令，它后面跟的是调用指令的下一条指令的偏移量，“call”指令的下一条指令是“add”，它的地址是0x080480bf，所以“相对于add指令偏移量为0x00000009”的地址为0x080480bf + 9 = 0x080480c8刚好是“swap ”函数的地址。</p>
+<h3 id="重定位表">重定位表</h3>
+<p>重定位表（Relocation Table）的结构专门用来保存这些与重定位相关的信息，我们在前面介绍ELF文件结构时已经提到过了重定位表，它在ELF文件中往往是一个或多个段。</p>
+<p>比如代码段“.text”如有要被重定位的地方，那么会有一个相对应叫“.rel.text”的段保存了代码段的重定位表；如果代码段“.data”有要被重定位的地方，就会有一个相对应叫“.rel.data”的段保存了数据段的重定位表。我们可以使用objdump来查看目标文件的重定位表：<code> objdump -r a.o</code>.</p>
+<h3 id="符号解析">符号解析</h3>
+<p>在我们通常的观念里，之所以要链接是因为我们目标文件中用到的符号被定义在其他目标文件，所以要将它们链接起来。比如我们直接使用ld来链接“a.o”，而不将“b.o”作为输入。链接器就会发现shared和swap两个符号没有被定义，没有办法完成链接工作：</p>
+<pre><code>$ ld a.o
+a.o: In function `main':
+a.c:(.text+0x1c): undefined reference to `shared'
+a.c:(.text+0x27): undefined reference to `swap
+</code></pre><p>重定位的过程中夜伴随着符号的解析过程，每个目标文件都可能定义一些符号，也可能引用到定义在其他目标文件的符号。重定位过程中，每个重定位的入口都是对一个符号的引用，当链接器需要对某个符号的引用进行重定位时，它就要确定这个符号的目标地址。这时候链接器就会去查找由所有输入目标文件的符号表组成的全局符号表，找到相应的符号后进行重定位。</p>
+<h3 id="abi稳定">ABI稳定</h3>
+<p>如果要使两个编译器编译出来的目标文件能够相互链接，那么这两个目标文件必须满足下面这些条件：采用同样的目标文件格式、拥有同样的符号修饰标准、变量的内存分布方式相同、函数的调用方式相同，等等。其中我们把符号修饰标准、变量内存布局、函数调用方式等这些跟可执行代码二进制兼容性相关的内容称为ABI（Application Binary Interface）。</p>
+<p>ABI与我们经常接触的API都是所谓的应用程序接口。但API往往是指源代码级别的接口，比如我们可以说POSIX是一个API标准、Windows所规定的应用程序接口是一个API；而ABI是指二进制层面的接口，ABI的兼容程度比API要更为严格，比如我们可以说C++的对象内存分布（Object Memory Layout）是C++ ABI的一部分。</p>
+<p>影响ABI的因素非常多，硬件、编程语言、编译器、链接器、操作系统等都会影响ABI。我们可以从C语言的角度来看一个编程语言是如何影响ABI的。对于C语言的目标代码来说，以下几个方面会决定目标文件之间是否二进制兼容：</p>
+<ul>
+<li>内置类型（如int、float、char等）的大小和在存储器中的放置方式（大端、小端、对齐方式等）</li>
+<li>组合类型（如struct、union、数组等）的存储方式和内存分布</li>
+<li>“外部符号（external-linkage）与用户定义的符号之间的命名方式和解析方式，如函数名func在C语言的目标文件中是否被解析成外部符号_func”</li>
+<li>函数调用方式，比如参数入栈顺序、返回值如何保持等。</li>
+<li>堆栈的分布方式，比如参数和局部变量在堆栈里的位置，参数传递方法等。</li>
+<li>寄存器使用约定，函数调用时哪些寄存器可以修改，哪些须要保存，等等。</li>
+</ul>
+<h2 id="静态库链接">静态库链接</h2>
+<p>一个静态库可以简单地看成一组目标文件的集合，即很多目标文件经过压缩打包后形成的一个文件。比如我们在Linux中最常用的C语言静态库libc位于/usr/lib/libc.a，它属于glibc项目的一部分；像Windows这样的平台上，最常使用的C语言库是由集成开发环境所附带的运行库，这些库一般由编译器厂商提供，比如Visual C++附带了多个版本的C/C++运行库。</p>
+
+    </div>
+    <footer>
+      <div class="stats">
+  
+    <ul class="categories">
+      
+        
+          <li><a class="article-terms-link" href="https://techchao.com/categories/%e7%bc%96%e8%af%91/">编译</a></li>
+        
+      
+    </ul>
+  
+  
+    <ul class="tags">
+      
+        
+          <li><a class="article-terms-link" href="https://techchao.com/tags/%e6%8a%80%e6%9c%af/">技术</a></li>
+        
+      
+    </ul>
+  
+</div>
+
+    </footer>
+  </article>
+  
+    
+  <article class="post">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "techchao.com" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  </article>
+
+
+
+
+  
+  <div class="pagination">
+    
+    
+      <a href="https://techchao.com/blog/ios_block/" class="button right"><span>一文帮你看懂 iOS block 底层原理</span></a>
+    
+  </div>
+
+      </main>
+      <section id="site-sidebar">
+  
+    <section id="recent-posts">
+      <header>
+        <h1>最新文章</h1>
+      </header>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/link_load4/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1601280398327-586180e5a652?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2134&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1601280398327-586180e5a652?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2134&amp;q=80" alt="">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/link_load4/">读《程序员的自我修养-链接、装载与库》—— 静态链接</a></h2>
+          <time class="published" datetime="2020-11-11 15:37:32 &#43;0800 CST">November 11, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/ios_block/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1603309040631-772df9922ef0?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2002&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1603309040631-772df9922ef0?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2002&amp;q=80" alt="">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/ios_block/">一文帮你看懂 iOS block 底层原理</a></h2>
+          <time class="published" datetime="2020-11-10 10:32:56 &#43;0800 CST">November 10, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/link_load3/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1602066698275-3025cd12e809?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=967&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1602066698275-3025cd12e809?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=967&amp;q=80" alt="">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/link_load3/">读《程序员的自我修养-链接、装载与库》—— 目标文件结构</a></h2>
+          <time class="published" datetime="2020-11-03 15:38:44 &#43;0800 CST">November 3, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/link_load2/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1587321174565-73cffc72e10a?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1949&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1587321174565-73cffc72e10a?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1949&amp;q=80" alt="">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/link_load2/">读《程序员的自我修养-链接、装载与库》—— 编译和链接</a></h2>
+          <time class="published" datetime="2020-11-02 16:03:45 &#43;0800 CST">November 2, 2020</time>
+        </header>
+      </article>
+      
+      <article class="mini-post">
+          <a href="https://techchao.com/blog/link_load/" class="image" style="--bg-image: url('https://images.unsplash.com/photo-1601173662818-95e6e19c4c50?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2090&amp;q=80');">
+    <img class="cover" src="https://images.unsplash.com/photo-1601173662818-95e6e19c4c50?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=2090&amp;q=80" alt="">
+  </a>
+        <header>
+          <h2><a href="https://techchao.com/blog/link_load/">读《程序员的自我修养-链接、装载与库》—— 基础知识</a></h2>
+          <time class="published" datetime="2020-10-29 18:56:18 &#43;0800 CST">October 29, 2020</time>
+        </header>
+      </article>
+      
+      
+        <footer>
+          <a href="https://techchao.com/blog/" class="button">查看更多</a>
+        </footer>
+      
+    </section>
+  
+
+  
+    
+
+      <section id="categories">
+        <header>
+          <h1><a href="https://techchao.com/categories">分类</a></h1>
+        </header>
+        <ul>
+          
+          
+          <li>
+              <a href="https://techchao.com/categories/%E7%BC%96%E8%AF%91/">编译<span class="count">4</span></a>
+          
+          <li>
+              <a href="https://techchao.com/categories/flutter/">flutter<span class="count">3</span></a>
+          
+          <li>
+              <a href="https://techchao.com/categories/ios/">ios<span class="count">1</span></a>
+          
+          </li>
+        </ul>
+      </section>
+    
+  
+
+  
+    <section id="mini-bio">
+      <header>
+        <h1>关于</h1>
+      </header>
+      <p>一个会点 Flutter 的 iOSer</p>
+      <footer>
+        <a href="https://techchao.com/about" class="button">查看更多</a>
+      </footer>
+    </section>
+  
+</section>
+
+      <footer id="site-footer">
+  
+      <ul class="socnet-icons">
+        
+
+        <li><a href="//github.com/PhoenixiOSer" target="_blank" rel="noopener" title="GitHub" class="fab fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li><a href="mailto:656733936@qq.com" target="_blank" title="Email" class="far fa-envelope"></a></li>
+
+      </ul>
+  
+  <p class="copyright">
+    © 2020 TechChao
+      <br>
+    主题: <a href='https://themes.gohugo.io/hugo-future-imperfect-slim/' target='_blank' rel='noopener'>Hugo Future Imperfect Slim</a><br> | 由 <a href='https://gohugo.io/' target='_blank' rel='noopener' title='0.75.0'>Hugo</a> 驱动
+  </p>
+</footer>
+<a id="back-to-top" href="#" class="fas fa-arrow-up fa-2x"></a>
+
+      <script src="https://techchao.com/js/highlight.js"></script>
+    
+    <script>hljs.initHighlightingOnLoad();</script><script src="https://techchao.com/js/bundle.min.b4776136bf9d934e52e6ed871e063596bd248370eb3345ec4d49a884121c2161.js" integrity="sha256-tHdhNr&#43;dk05S5u2HHgY1lr0kg3DrM0XsTUmohBIcIWE="></script>
+    <script src="https://techchao.com/js/add-on.js"></script>
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', '180959623', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+    </div>
+  </body>
+</html>
