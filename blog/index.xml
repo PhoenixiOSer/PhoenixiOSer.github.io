@@ -6,7 +6,20 @@
     <description>Recent content in Blog on TechChao</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Wed, 11 Nov 2020 15:37:32 +0800</lastBuildDate><atom:link href="https://techchao.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 11 Dec 2020 15:32:00 +0800</lastBuildDate><atom:link href="https://techchao.com/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>剑指offer—面试题3： 数组中重复的数字</title>
+      <link>https://techchao.com/blog/arithmetic_01/</link>
+      <pubDate>Fri, 11 Dec 2020 15:32:00 +0800</pubDate>
+      
+      <guid>https://techchao.com/blog/arithmetic_01/</guid>
+      <description>在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。
+示例 1：
+输入： [2, 3, 1, 0, 2, 5, 3] 输出：2 或 3 暴力算法 在数组中查找重复的数字，首先想到的是遍历，直接使用两次 for 循环每次取出未比较过的一个数字和接下里的每个数字比对找出重复的数字，代码：
+ func findRepeatNumber1(_ nums: [Int]) -&amp;gt; Int { if nums.count &amp;lt; 2 { return -1 } for i in 0..&amp;lt;nums.count { for j in (i+1)..&amp;lt;nums.count { if nums[i] == nums[j] { return nums[i] } } } return -1 } 以上算法实现的复杂度分析：
+ 时间复杂度是 O(n^2) 空间复杂度是 O(1)  该算法是最先能想到的，简单粗暴。但是没啥实际应用，太过耗时了在 LeetCode上，2 &amp;lt;= n &amp;lt;= 100000的测试用例都因太过耗时没有通过。</description>
+    </item>
+    
     <item>
       <title>读《程序员的自我修养-链接、装载与库》—— 静态链接</title>
       <link>https://techchao.com/blog/link_load4/</link>
